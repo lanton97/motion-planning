@@ -1,6 +1,7 @@
 import pygame
 from pygame import gfxdraw
 import time
+from copy import deepcopy
 # A basic class to handle drawing of obstacles, vehicles and planning motions for user viewing
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -22,20 +23,25 @@ class baseRenderer:
         self._clock = pygame.time.Clock()
 
     def draw_walls(self, walls):
-        for wall in walls:
-            gfxdraw.line(self._surface, wall[0][0] + int(self._width/2), wall[0][1] + int(self._width/2), 
-                    wall[1][0] + int(self._width/2), wall[1][1] + int(self._width/2), BLACK)
+        walls_tf = self._translate_lines(deepcopy(walls))
+        for wall in walls_tf:
+            gfxdraw.line(self._surface, wall[0][0], wall[0][1], 
+                    wall[1][0], wall[1][1], BLACK)
 
     def draw_pois(self, start_pos, end_pos):
-        gfxdraw.filled_circle(self._surface, start_pos[0] + int(self._width/2), start_pos[1] + int(self._width/2), 5, YELLOW)
-        gfxdraw.filled_circle(self._surface, end_pos[0] + int(self._width/2), end_pos[1] + int(self._width/2), 5, GREEN)
+        start_pos_tf = self._translate_point(deepcopy(start_pos))
+        end_pos_tf = self._translate_point(deepcopy(end_pos))
+        gfxdraw.filled_circle(self._surface, start_pos_tf[0], start_pos_tf[1], 5, YELLOW)
+        gfxdraw.filled_circle(self._surface, end_pos_tf[0], end_pos_tf[1], 5, GREEN)
 
     def draw_nodes(self, nodes):
-        for node in nodes:
+        nodes_tf = self._translate_points(nodes)
+        for node in nodes_tf:
             gfxdraw.filled_circle(self._surface, node[0], node[1], 1, GREY)
 
-    def draw_edges(self, lines):
-        for line in lines:
+    def draw_straight_edges(self, lines):
+        lines_tf = self._translate_lines(deepcopy(lines))
+        for line in lines_tf:
             gfxdraw.line(self._surface, line[0][0], line[0][1], line[1][0], line[1][1], GREY)
 
     def update(self):
@@ -45,14 +51,32 @@ class baseRenderer:
         self._clock.tick(1)
         pygame.display.flip()
 
+    def _translate_lines(self, lines):
+        for line in lines:
+            line[0][0] += int(self._width / 2)
+            line[0][1] += int(self._height / 2)
+            line[1][0] += int(self._width / 2)
+            line[1][1] += int(self._height / 2)
+        return lines
+
+    def _translate_points(self, points):
+        for point in points:
+            point = self._translate_point(point)
+        return points
+
+    def _translate_point(self, point):
+        point[0] += int(self._width / 2)
+        point[1] += int(self._height / 2)
+        return point
+
 if __name__=='__main__':
     tester = baseRenderer()
-    wall1 = [ (0, 0),  
-              (60, 0)]
-    wall2 = [ (0, 0), 
-              (0, 60)]
-    wall3 = [ (0, -300),  
-              (0, -200)]
+    wall1 = [ [0, 0],  
+              [60, 0]]
+    wall2 = [ [0, 0], 
+              [0, 60]]
+    wall3 = [ [0, -300],  
+              [0, -200]]
     walls = [wall1, wall2, wall3]
 
     start_pos = [90, 90]
