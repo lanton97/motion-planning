@@ -1,16 +1,30 @@
 import numpy as np
-from viz.viz import BaseRenderer
+from viz import BaseContinuousRenderer
+import time
+from copy import deepcopy
 
 # A simple base planner acting as a virtual class
 class BaseSamplingPlanner():
-    def __init__(self):
-        pass
+    def __init__(self,
+            initConfig,
+            environment,
+            ):
+
+        self.initConfig = initConfig
+        self.env = environment
+        self.renderer = BaseContinuousRenderer()
         
     def plan(self):
         raise NotImplementedError
 
-    def render(self):
-        pass
+    def render(self, graph):
+        self.renderer.draw_walls(self.env.walls)
+        self.renderer.draw_pois(self.env.startPos, self.env.endPos)
+        nodeList, edgeList = graph.getNodeAndEdgeList()
+        self.renderer.draw_nodes(nodeList)
+        self.renderer.draw_lines(edgeList)
+        self.renderer.update()
+            
 
 class ConfigurationNode():
     def __init__(self, configuration):
@@ -32,7 +46,7 @@ class ConfigurationGraph():
             parentNode: ConfigurationNode,
             node: ConfigurationNode):
         self.nodes.append(node)
-        self.edges.add((parentNode, Node))
+        self.edges.add((parentNode, node))
 
     # Return the node with the configuration closest to the given position
     def getNearestNode(self, position):
@@ -46,7 +60,14 @@ class ConfigurationGraph():
                 nearestNode = node
         return nearestNode
 
+    def getNodeAndEdgeList(self):
+        nodeList = []
+        for node in self.nodes:
+            nodeList.append(node.config)
 
+        edgeList = []
+        for edge in self.edges:
+            edgeList.append((deepcopy(edge[0].config), deepcopy(edge[1].config)))
 
-
+        return nodeList, edgeList
 

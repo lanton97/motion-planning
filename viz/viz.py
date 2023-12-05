@@ -13,7 +13,7 @@ GREY = (128, 128, 128)
 WHITE = (255, 255, 255)
 
 # A basic class to handle drawing of obstacles, vehicles and planning motions for user viewing
-class BaseRenderer:
+class BaseContinuousRenderer:
     # Create default PyGame drawing objects and windows
     def __init__(self, width=600, height=600):
         self._width = width
@@ -43,16 +43,16 @@ class BaseRenderer:
 
     # Draw nodes for the motion planning
     def draw_nodes(self, nodes):
-        nodes_tf = self._translate_points(nodes)
+        nodes_tf = self._translate_points(deepcopy(nodes))
         for node in nodes_tf:
-            gfxdraw.filled_circle(self._surface, node[0], node[1], 1, GREY)
+            gfxdraw.filled_circle(self._surface, int(node[0]), int(node[1]), 1, GREY)
 
     # Draw straight edge connections between nodes
     # Requires the start node and end node positions
-    def draw_straight_edges(self, lines):
+    def draw_lines(self, lines):
         lines_tf = self._translate_lines(deepcopy(lines))
         for line in lines_tf:
-            gfxdraw.line(self._surface, line[0][0], line[0][1], line[1][0], line[1][1], GREY)
+            gfxdraw.line(self._surface, int(line[0][0]), int(line[0][1]), int(line[1][0]), int(line[1][1]), GREY)
 
     # Update the windows
     def update(self):
@@ -85,7 +85,7 @@ class BaseRenderer:
         return point
 
 if __name__=='__main__':
-    tester = baseRenderer()
+    tester = baseContinuousRenderer()
     wall1 = [ [0, 0],  
               [60, 0]]
     wall2 = [ [0, 0], 
