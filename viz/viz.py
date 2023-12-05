@@ -13,11 +13,11 @@ GREY = (128, 128, 128)
 WHITE = (255, 255, 255)
 
 # A basic class to handle drawing of obstacles, vehicles and planning motions for user viewing
-class baseRenderer:
+class BaseRenderer:
     # Create default PyGame drawing objects and windows
-    def __init__(self):
-        self._width = 600
-        self._height = 600
+    def __init__(self, width=600, height=600):
+        self._width = width
+        self._height = height
         pygame.init()
         pygame.display.init()
         self._display = pygame.display.set_mode((self._width,self._height))
