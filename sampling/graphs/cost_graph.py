@@ -1,10 +1,11 @@
 from sampling.graphs.base import *
 
 class CostConfigurationGraph():
-    nodes = list()
-    costs = dict()
-    edges = dict()
+
     def __init__(self, configDimensionality, positionDimensionality, initNode):
+        self.nodes = list()
+        self.costs = dict()
+        self.edges = dict()
         self.configDim = configDimensionality
         self.posDim = positionDimensionality
         self.nodes.append(initNode)
