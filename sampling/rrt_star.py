@@ -1,7 +1,8 @@
 import numpy as np
-from sampling.graphs.base import *
+from sampling.graphs.cost_graph import *
 from collisionCheckers.base import PointCollisionChecker
 from sampling.base import *
+from sampling.costs.dist import distanceCost
 # Base RRT planner developed from the description in
 # http://lavalle.pl/rrt/about.html
 # Should work in a variety of environments, as it is
@@ -9,22 +10,26 @@ from sampling.base import *
 # dimensionality, and collision checking
 # Does assume only two types of obstacles: points
 # and walls
-class RRT(BaseSamplingPlanner):
+class RRTStar(BaseSamplingPlanner):
     def __init__(self,
             initConfig,
             environment,
             deltaConf,
+            neighbourDist=20,
             positionCollisionChecker=PointCollisionChecker,
             vehicleDynamics=None,
+            costFunction=distanceCost,
             ):
         super().__init__(initConfig, environment)
         self.delConf = deltaConf
+        self.neighbourDist=neighbourDist
         self.collChecker = positionCollisionChecker(2, 2, 2)
         self.dynamics = vehicleDynamics()
+        self.costFunc = costFunction
 
     def plan(self, numSamples, render=True):
         initNode = ConfigurationNode(self.initConfig)
-        graph = ConfigurationGraph(len(self.initConfig), self.env.dim, initNode)
+        graph = CostConfigurationGraph(len(self.initConfig), self.env.dim, initNode)
 
         for i in range(numSamples):
             # Sample a random position
@@ -40,16 +45,25 @@ class RRT(BaseSamplingPlanner):
             randConf = np.array([*randPos, *randOrient])
             # Get the nearest node to the position
             qNear = graph.getNearestNode(randPos)
+
             # Create a new configuration node closer to the random one by sampling
             # the vehicle dynamics
             # TODO: Add collision checking for new node
-            qNew = self.dynamics.sample(qNear, randConf, self.delConf)
+            qNew, cost = self.dynamics.sampleWCost(qNear, randConf, self.delConf, self.costFunc)
+            # Update if there is a cheaper neighbour
+            lowCostNeighbour = graph.getLowestCostNeighbour(qNew.config, self.neighbourDist, qNear, cost, self.costFunc)
+
+            # Add the new node to the graph
+            graph.addNode(lowCostNeighbour, qNew, self.costFunc)
+
+            # Rewire the tree based on the new node, if it is cheaper
+            neighbours = graph.getNeighbourhoodNodes(qNew.config, self.neighbourDist)
+            for neighbour in neighbours:
+                graph.rewireIfCheaper(qNew, neighbour, self.costFunc)
+
             if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config]):
                 print("Path Found")
                 break
-
-            # Add the new node to the graph
-            graph.addNode(qNear, qNew)
 
             if render:
                 self.render(graph)
