@@ -77,8 +77,6 @@ class BidirectionalRRT(BaseSamplingPlanner):
         connectionFound = False
         # TODO: Refactor the next part to reuse code
         if fwToBWDist < self.delConf:
-            print(newestForwardNode.config)
-            print(nearestBWNodeToFW.config)
             connectionFound = True
             newNode = nearestBWNodeToFW
             nearestNode = newestForwardNode
@@ -100,6 +98,8 @@ class BidirectionalRRT(BaseSamplingPlanner):
                 newNode = backwardGraph.edges[nearestNode]
             # Update once more to add the last root node
             forwardGraph.addNode(nearestNode, newNode)
+
+        return connectionFound
 
 
 
