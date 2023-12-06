@@ -1,5 +1,5 @@
 import numpy as np
-from viz import BaseContinuousRenderer
+from viz.viz import BaseContinuousRenderer
 import time
 from copy import deepcopy
 
@@ -50,11 +50,11 @@ class ConfigurationGraph():
 
     # Return the node with the configuration closest to the given position
     def getNearestNode(self, position):
-        minDist = inf
+        minDist = np.inf
         nearestNode = None
         for node in self.nodes:
             # The default np norm is l2, i.e. the distance
-            dist = np.linalg.norm(position - node.config[:self.posDim])
+            dist = np.linalg.norm(np.array(position) - np.array(node.config[:self.posDim]))
             if dist < minDist:
                 minDist = dist
                 nearestNode = node

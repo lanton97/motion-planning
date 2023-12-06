@@ -14,15 +14,14 @@ class RRT(BaseSamplingPlanner):
             environment,
             deltaConf,
             positionCollisionChecker=PointCollisionChecker,
-            vehicleDynamics=None
+            vehicleDynamics=None,
             ):
-        self.initConfig = initConfig
-        self.env = environment
+        super().__init__(initConfig, environment)
         self.delConf = deltaConf
-        self.collChecker = positionCollisionChecker
-        self.dynamics = vehicleDynamics
+        self.collChecker = positionCollisionChecker(2, 2, 2)
+        self.dynamics = vehicleDynamics()
 
-    def plan(self, numSamples):
+    def plan(self, numSamples, render=True):
         initNode = ConfigurationNode(self.initConfig)
         graph = ConfigurationGraph(len(self.initConfig), self.env.dim, initNode)
 
@@ -32,11 +31,11 @@ class RRT(BaseSamplingPlanner):
             # Check that the position is not a collision
             # This may need to change for more complex collisions than what is
             # implemented
-            while PointCollisionChecker.checkPointCollisions(randPos, self.env.obst) or \
-                    PointCollisionChecker.checkWallsCollisions(randPos, self.env.walls):
+            while self.collChecker.checkPointCollisions(randPos, self.env.obst) or \
+                    self.collChecker.checkWallCollisions(randPos, self.env.walls):
                         randPos = self.env.getRandomPosition()
 
-            randOrient = vehicleDynamics.getRandomOrientation()
+            randOrient = self.dynamics.getRandomOrientation()
             randConf = np.array([*randPos, *randOrient])
             # Get the nearest node to the position
             qNear = graph.getNearestNode(randPos)
@@ -44,8 +43,16 @@ class RRT(BaseSamplingPlanner):
             # the vehicle dynamics
             # TODO: Add collision checking for new node
             qNew = self.dynamics.sample(qNear, randConf, self.delConf)
+            if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config]):
+                print("Path Found")
+                break
+
             # Add the new node to the graph
             graph.addNode(qNear, qNew)
+
+            if render:
+                self.render(graph)
+
 
         return graph
 

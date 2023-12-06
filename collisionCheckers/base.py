@@ -1,3 +1,4 @@
+import numpy as np
 # Collision checker for sampling new configurations
 # We treat each configuration as a sphere/circle
 # of a given radius to simplify
@@ -21,7 +22,7 @@ class PointCollisionChecker():
                 return True
         return False
 
-    def checkWallCollision(self, config, wallList):
+    def checkWallCollisions(self, config, wallList):
         pos = np.array(config[:self.posDim])
         for wall in wallList:
             dist = np.linalg.norm(pos - np.array(point))
