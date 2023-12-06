@@ -8,9 +8,9 @@ class ConfigurationNode():
 # This graph is used to hold the configurations and connections
 # for sampling based planners
 class ConfigurationGraph():
-    nodes = list()
-    edges = set()
     def __init__(self, configDimensionality, positionDimensionality, initNode):
+        self.nodes = list()
+        self.edges = dict()
         self.configDim = configDimensionality
         self.posDim = positionDimensionality
         self.nodes.append(initNode)
@@ -21,7 +21,7 @@ class ConfigurationGraph():
             parentNode: ConfigurationNode,
             node: ConfigurationNode):
         self.nodes.append(node)
-        self.edges.add((parentNode, node))
+        self.edges[node] = parentNode
 
     # Return the node with the configuration closest to the given position
     def getNearestNode(self, position):
@@ -41,8 +41,8 @@ class ConfigurationGraph():
             nodeList.append(node.config)
 
         edgeList = []
-        for edge in self.edges:
-            edgeList.append((deepcopy(edge[0].config), deepcopy(edge[1].config)))
+        for node, parent in self.edges.items():
+            edgeList.append((deepcopy(node.config), deepcopy(parent.config)))
 
         return nodeList, edgeList
 
