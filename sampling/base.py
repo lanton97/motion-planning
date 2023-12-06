@@ -18,6 +18,7 @@ class BaseSamplingPlanner():
         raise NotImplementedError
 
     def render(self, graph):
+        self.renderer.clear()
         self.renderer.draw_walls(self.env.walls)
         self.renderer.draw_pois(self.env.startPos, self.env.endPos)
         nodeList, edgeList = graph.getNodeAndEdgeList()
