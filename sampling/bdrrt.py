@@ -39,6 +39,8 @@ class BidirectionalRRT(BaseSamplingPlanner):
             if render:
                 image_data.append(self.render(forwardGraph, backwardGraph))
 
+        if render:
+            image_data.append(self.render(forwardGraph, backwardGraph))
 
         return forwardGraph, image_data
 

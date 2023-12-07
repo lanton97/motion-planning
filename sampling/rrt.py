@@ -45,16 +45,21 @@ class RRT(BaseSamplingPlanner):
             # the vehicle dynamics
             # TODO: Add collision checking for new node
             qNew = self.dynamics.sample(qNear, randConf, self.delConf)
-            if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config]):
-                print("Path Found")
-                break
+
 
             # Add the new node to the graph
             graph.addNode(qNear, qNew)
+            if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config], self.delConf):
+                endNode = ConfigurationNode(self.env.endPos)
+                graph.addNode(qNew, endNode)
+                print("Path Found")
+                break
 
             if render:
                 image_data.append(self.render(graph))
 
+        if render:
+            image_data.append(self.render(graph))
 
         return graph, image_data
 

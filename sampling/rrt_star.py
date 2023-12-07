@@ -62,12 +62,16 @@ class RRTStar(BaseSamplingPlanner):
             for neighbour in neighbours:
                 graph.rewireIfCheaper(qNew, neighbour, self.costFunc)
 
-            if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config]):
+            if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config], self.delConf):
+                endNode = ConfigurationNode(self.env.endPos)
+                graph.addNode(qNew, endNode)
                 print("Path Found")
                 break
 
             if render:
                 image_data.append(self.render(graph))
+        if render:
+            image_data.append(self.render(graph))
 
 
         return graph, image_data

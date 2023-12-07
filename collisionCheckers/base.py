@@ -14,11 +14,13 @@ class PointCollisionChecker():
         self.confDim = configurationDimensionality
         self.collDist = collDist
 
-    def checkPointCollisions(self, config, pointList):
+    def checkPointCollisions(self, config, pointList, delta=None):
+        if delta == None:
+            delta = self.collDist
         pos = np.array(config[:self.posDim])
         for point in pointList:
             dist = np.linalg.norm(pos - np.array(point))
-            if dist <= self.collDist:
+            if dist <= delta:
                 return True
         return False
 
