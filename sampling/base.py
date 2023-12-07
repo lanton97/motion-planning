@@ -25,6 +25,8 @@ class BaseSamplingPlanner():
         self.renderer.draw_nodes(nodeList)
         self.renderer.draw_lines(edgeList)
         self.renderer.update()
+        img_data = self.renderer.pull_array()
+        return img_data
             
 
 

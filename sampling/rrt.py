@@ -25,6 +25,7 @@ class RRT(BaseSamplingPlanner):
     def plan(self, numSamples, render=True):
         initNode = ConfigurationNode(self.initConfig)
         graph = ConfigurationGraph(len(self.initConfig), self.env.dim, initNode)
+        image_data = []
 
         for i in range(numSamples):
             # Sample a random position
@@ -52,10 +53,10 @@ class RRT(BaseSamplingPlanner):
             graph.addNode(qNear, qNew)
 
             if render:
-                self.render(graph)
+                image_data.append(self.render(graph))
 
 
-        return graph
+        return graph, image_data
 
 
 

@@ -62,14 +62,6 @@ class BaseContinuousRenderer:
         self._clock.tick(1)
         pygame.display.flip()
 
-    def clear(self):
-        self._surface.fill(WHITE)
-
-    def pull_array(self):
-        img_data = pygame.surfarray.array3d(self._surface)
-        img_data = img_data.swapaxes(0,1)
-        return img_data
-
     ####################### Utility Functions ###########################
     # The following functions translate the positions of objects from a zero-centred 
     # coordinate system into the screen coordinates for drawing

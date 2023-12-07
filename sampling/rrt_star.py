@@ -30,6 +30,7 @@ class RRTStar(BaseSamplingPlanner):
     def plan(self, numSamples, render=True):
         initNode = ConfigurationNode(self.initConfig)
         graph = CostConfigurationGraph(len(self.initConfig), self.env.dim, initNode)
+        image_data = []
 
         for i in range(numSamples):
             # Sample a random position
@@ -66,10 +67,10 @@ class RRTStar(BaseSamplingPlanner):
                 break
 
             if render:
-                self.render(graph)
+                image_data.append(self.render(graph))
 
 
-        return graph
+        return graph, image_data
 
 
 

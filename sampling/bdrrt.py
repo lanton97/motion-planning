@@ -27,6 +27,7 @@ class BidirectionalRRT(BaseSamplingPlanner):
         initBackwardNode = ConfigurationNode(self.env.endPos)
         forwardGraph = ConfigurationGraph(len(self.initConfig), self.env.dim, initForwardNode)
         backwardGraph = ConfigurationGraph(len(self.initConfig), self.env.dim, initBackwardNode)
+        image_data = []
 
         for i in range(numSamples):
             self.expandGraph(forwardGraph)
@@ -36,10 +37,10 @@ class BidirectionalRRT(BaseSamplingPlanner):
                 break
 
             if render:
-                self.render(forwardGraph, backwardGraph)
+                image_data.append(self.render(forwardGraph, backwardGraph))
 
 
-        return forwardGraph, backwardGraph
+        return forwardGraph, image_data
 
     # Expand a graph in place
     def expandGraph(self, graph):
@@ -114,5 +115,7 @@ class BidirectionalRRT(BaseSamplingPlanner):
         self.renderer.draw_nodes(nodeList)
         self.renderer.draw_lines(edgeList)
         self.renderer.update()
+        img_data = self.renderer.pull_array()
+        return img_data
 
 

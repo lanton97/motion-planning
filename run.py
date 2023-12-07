@@ -1,5 +1,6 @@
 from env.empty_env import *
 from args.arg_lists import *
+from args.util import save_gif, generate_results_dir
 import argparse
 
 parser = argparse.ArgumentParser(description='This script handles running motion planning algorithms')
@@ -43,6 +44,10 @@ render = False
 if args.rend:
     render = True
 
-graph = planner.plan(10000, True)
+graph, img_data = planner.plan(10000, True)
 
-time.sleep(100)
+if args.save:
+    dir = generate_results_dir(args.map, args.alg)
+    save_gif(img_data, dir+'run.gif')
+
+#time.sleep(100)
