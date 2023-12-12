@@ -61,7 +61,7 @@ class CostConfigurationGraph(ConfigurationGraph):
 
     def rewireIfCheaper(self, node, potentialChild, costFunc, dynamics, rewireDist):
         if costFunc(node.config, potentialChild.config) + self.costs[node] < self.costs[potentialChild]:
-            _, cost, connector = dynamics.sampleWCost(node.config, potentialChild.config, rewireDist, costFunc)
+            _, cost, connector = dynamics.sampleWCost(node, potentialChild.config, rewireDist, costFunc)
             edge = Edge(node, connector)
             self.edges[potentialChild] = edge
             self.costs[potentialChild] = costFunc(node.config, potentialChild.config) + self.costs[node]

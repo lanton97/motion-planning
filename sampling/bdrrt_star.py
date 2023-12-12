@@ -96,24 +96,28 @@ class BidirectionalRRTStar(BidirectionalRRT):
             connectionFound = True
             newNode = nearestBWNodeToFW
             nearestNode = newestForwardNode
+            _, cost, connector = self.dynamics.sampleWCost(nearestNode, newNode.config, self.delConf, self.costFunc)
             while backwardGraph.nodes.index(newNode) != 0:
-                forwardGraph.addNode(nearestNode, newNode, self.costFunc)
+                forwardGraph.addNode(nearestNode, newNode, self.costFunc, connector)
                 nearestNode = newNode
-                newNode = backwardGraph.edges[nearestNode]
+                newNode = backwardGraph.edges[nearestNode].parentNode
+                connector = backwardGraph.edges[nearestNode].connectors
             # Update once more to add the last root node
-            forwardGraph.addNode(nearestNode, newNode, self.costFunc)
+            forwardGraph.addNode(nearestNode, newNode, self.costFunc, costFunc)
 
 
         if bwToFWDist < self.delConf:
             connectionFound = True
             newNode = newestBackwardNode
             nearestNode = nearestFWNodeToBW
+            _, cost, connector = self.dynamics.sampleWCost(nearestNode, newNode.config, self.delConf, self.costFunc)
             while backwardGraph.nodes.index(newNode) != 0:
-                forwardGraph.addNode(nearestNode, newNode, self.costFunc)
+                forwardGraph.addNode(nearestNode, newNode, self.costFunc, connector)
                 nearestNode = newNode
-                newNode = backwardGraph.edges[nearestNode]
+                newNode = backwardGraph.edges[nearestNode].parentNode
+                connector = backwardGraph.edges[nearestNode].connectors
             # Update once more to add the last root node
-            forwardGraph.addNode(nearestNode, newNode, self.costFunc)
+            forwardGraph.addNode(nearestNode, newNode, self.costFunc, connector)
 
         return connectionFound
 

@@ -83,24 +83,29 @@ class BidirectionalRRT(BaseSamplingPlanner):
             connectionFound = True
             newNode = nearestBWNodeToFW
             nearestNode = newestForwardNode
+            _, connector = self.dynamics.sample(nearestNode, newNode.config, self.delConf)
+
             while backwardGraph.nodes.index(newNode) != 0:
-                forwardGraph.addNode(nearestNode, newNode)
+                forwardGraph.addNode(nearestNode, newNode, connector)
                 nearestNode = newNode
-                newNode = backwardGraph.edges[nearestNode]
+                newNode = backwardGraph.edges[nearestNode].parentNode
+                connector = backwardGraph.edges[nearestNode].connectors
             # Update once more to add the last root node
-            forwardGraph.addNode(nearestNode, newNode)
+            forwardGraph.addNode(nearestNode, newNode, connectors)
 
 
         if bwToFWDist < self.delConf:
             connectionFound = True
             newNode = newestBackwardNode
             nearestNode = nearestFWNodeToBW
+            _, connector = self.dynamics.sample(nearestNode, newNode.config, self.delConf)
             while backwardGraph.nodes.index(newNode) != 0:
-                forwardGraph.addNode(nearestNode, newNode)
+                forwardGraph.addNode(nearestNode, newNode, connector)
                 nearestNode = newNode
-                newNode = backwardGraph.edges[nearestNode]
+                newNode = backwardGraph.edges[nearestNode].parentNode
+                connector = backwardGraph.edges[nearestNode].connectors
             # Update once more to add the last root node
-            forwardGraph.addNode(nearestNode, newNode)
+            forwardGraph.addNode(nearestNode, newNode, connector)
 
         return connectionFound
 
