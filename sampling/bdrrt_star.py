@@ -21,32 +21,11 @@ class BidirectionalRRTStar(BidirectionalRRT):
             costFunction=distanceCost,
             ):
         super().__init__(environment, deltaConf, vehicleDynamics=vehicleDynamics, positionCollisionChecker=positionCollisionChecker)
-        self.neighbourDist = neighbourDist
+        self.neighbourDist=neighbourDist
         self.costFunc = costFunction
+        self.configNodeType = ConfigurationNode
+        self.configGraphType = CostConfigurationGraph
 
-    def plan(self, numSamples, render=True):
-        initForwardNode = ConfigurationNode(self.initConfig)
-        randOrient = self.dynamics.getRandomOrientation()
-        endConfig = np.array([*self.env.endPos, *randOrient])
-        initBackwardNode = ConfigurationNode(endConfig)
-        forwardGraph = CostConfigurationGraph(len(self.initConfig), self.env.dim, initForwardNode)
-        backwardGraph = CostConfigurationGraph(len(self.initConfig), self.env.dim, initBackwardNode)
-        image_data = []
-
-        for i in range(numSamples):
-            self.expandGraph(forwardGraph)
-            self.expandGraph(backwardGraph)
-
-            if self.findConnectionAndConnect(forwardGraph, backwardGraph):
-                break
-
-            if render:
-                image_data.append(self.render(forwardGraph, backwardGraph))
-
-        if render:
-            image_data.append(self.render(forwardGraph, backwardGraph))
-
-        return forwardGraph, image_data
 
     # Expand a graph in place
     def expandGraph(self, graph):

@@ -19,14 +19,16 @@ class BidirectionalRRT(BaseSamplingPlanner):
         super().__init__(environment, vehicleDynamics)
         self.delConf = deltaConf
         self.collChecker = positionCollisionChecker(2, 2, 2)
+        self.configNodeType = ConfigurationNode
+        self.configGraphType = ConfigurationGraph
 
     def plan(self, numSamples, render=True):
-        initForwardNode = ConfigurationNode(self.initConfig)
+        initForwardNode = self.configNodeType(self.initConfig)
         randOrient = self.dynamics.getRandomOrientation()
         endConfig = np.array([*self.env.endPos, *randOrient])
-        initBackwardNode = ConfigurationNode(endConfig)
-        forwardGraph = ConfigurationGraph(len(self.initConfig), self.env.dim, initForwardNode)
-        backwardGraph = ConfigurationGraph(len(self.initConfig), self.env.dim, initBackwardNode)
+        initBackwardNode = self.configNodeType(endConfig)
+        forwardGraph = self.configGraphType(len(self.initConfig), self.env.dim, initForwardNode)
+        backwardGraph = self.configGraphType(len(self.initConfig), self.env.dim, initBackwardNode)
         image_data = []
 
         for i in range(numSamples):
@@ -34,6 +36,7 @@ class BidirectionalRRT(BaseSamplingPlanner):
             self.expandGraph(backwardGraph)
 
             if self.findConnectionAndConnect(forwardGraph, backwardGraph):
+                print('Path Found.')
                 break
 
             if render:
