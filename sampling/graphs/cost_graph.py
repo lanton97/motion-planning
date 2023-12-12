@@ -1,6 +1,6 @@
 from sampling.graphs.base import *
 
-class CostConfigurationGraph():
+class CostConfigurationGraph(ConfigurationGraph):
 
     def __init__(self, configDimensionality, positionDimensionality, initNode):
         self.nodes = list()
@@ -16,9 +16,11 @@ class CostConfigurationGraph():
     def addNode(self,
             parentNode: ConfigurationNode,
             node: ConfigurationNode,
-            costFunc):
+            costFunc,
+            connector):
+        edge = Edge(parentNode, connector)
         self.nodes.append(node)
-        self.edges[node] = parentNode
+        self.edges[node] = edge
         self.costs[node] = costFunc(node.config, parentNode.config) + self.costs[parentNode]
 
     # Return the node with the configuration closest to the given position
@@ -57,21 +59,11 @@ class CostConfigurationGraph():
         return lowestCostNode
 
 
-    def rewireIfCheaper(self, node, potentialChild, costFunc):
+    def rewireIfCheaper(self, node, potentialChild, costFunc, dynamics, rewireDist):
         if costFunc(node.config, potentialChild.config) + self.costs[node] < self.costs[potentialChild]:
-            self.edges[potentialChild] = node
+            _, cost, connector = dynamics.sampleWCost(node, potentialChild, rewireDist, costFunc)
+            edge = Edge(node, connector)
+            self.edges[potentialChild] = edge
             self.costs[potentialChild] = costFunc(node.config, potentialChild.config) + self.costs[node]
 
-
-
-    def getNodeAndEdgeList(self):
-        nodeList = []
-        for node in self.nodes:
-            nodeList.append(node.config)
-
-        edgeList = []
-        for node, parent in self.edges.items():
-            edgeList.append((deepcopy(node.config), deepcopy(parent.config)))
-
-        return nodeList, edgeList
 

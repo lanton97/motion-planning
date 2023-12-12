@@ -50,17 +50,17 @@ class RRTStar(BaseSamplingPlanner):
             # Create a new configuration node closer to the random one by sampling
             # the vehicle dynamics
             # TODO: Add collision checking for new node
-            qNew, cost = self.dynamics.sampleWCost(qNear, randConf, self.delConf, self.costFunc)
+            qNew, cost, connector = self.dynamics.sampleWCost(qNear, randConf, self.delConf, self.costFunc)
             # Update if there is a cheaper neighbour
             lowCostNeighbour = graph.getLowestCostNeighbour(qNew.config, self.neighbourDist, qNear, cost, self.costFunc)
 
             # Add the new node to the graph
-            graph.addNode(lowCostNeighbour, qNew, self.costFunc)
+            graph.addNode(lowCostNeighbour, qNew, self.costFunc, connector)
 
             # Rewire the tree based on the new node, if it is cheaper
             neighbours = graph.getNeighbourhoodNodes(qNew.config, self.neighbourDist)
             for neighbour in neighbours:
-                graph.rewireIfCheaper(qNew, neighbour, self.costFunc)
+                graph.rewireIfCheaper(qNew, neighbour, self.costFunc, self.dynamics, self.neighbourDist)
 
             if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config], self.delConf):
                 endNode = ConfigurationNode(self.env.endPos)
