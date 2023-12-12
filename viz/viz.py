@@ -100,7 +100,7 @@ class BaseContinuousRenderer:
 
     def _translate_lines(self, lines):
         for line in lines:
-            line = self._translate_lines(line)
+            line = self._translate_line(line)
         return lines
 
     def _translate_line(self, line):
