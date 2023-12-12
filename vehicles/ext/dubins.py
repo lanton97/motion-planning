@@ -289,13 +289,13 @@ def centers(p1, p2, r):
     x1, y1, a1 = p1 
     x2, y2, a2 = p2 
 
-    q = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+    q = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 + 0.01 
     x3 = (x1 + x2) / 2
     y3 = (y1 + y2) / 2
 
-    xx = (r ** 2 - (q / 2) ** 2) ** 0.5 * (y1 - y2) / q
-    yy = (r ** 2 - (q / 2) ** 2) ** 0.5 * (x2 - x1) / q
-    return ((x3 + xx, y3 + yy), (x3 - xx, y3 - yy))
+    xx = np.sqrt(np.abs(r ** 2 - (q / 2) ** 2)) * (y1 - y2) / q
+    yy = np.sqrt(np.abs(r ** 2 - (q / 2) ** 2)) * (x2 - x1) / q
+    return np.array([(x3 + xx, y3 + yy), (x3 - xx, y3 - yy)])
 
 def getTheta(centre, point):
     x, y = [point[0]-centre[0], point[1]-centre[1]]
@@ -323,7 +323,7 @@ def getComponents(param, points):
     segment2 = None
     if curveType in [TurnType.LSR, TurnType.RSR, TurnType.RSL, TurnType.LSL]:
         segment2 = straightLine(points[1], points[2])
-    elif curveType in[LRL]:
+    elif curveType in[TurnType.LRL, TurnType.RLR]:
         _, centre = centers(points[1], points[2], param.turn_radius)
         th1 = getTheta(centre, points[2]) 
         th2 = getTheta(centre, points[1])
@@ -355,7 +355,7 @@ def getClosedFormPath(start, target, turnRad):
     param = calcDubinsPath(pt1, pt2, turnRad)
     path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
 
-    points = [path[0], seg1_end, seg2_end, seg3_end]
+    points = [path[0], seg1_end, seg2_end, target]
     return getComponents(param, points)
 
 
