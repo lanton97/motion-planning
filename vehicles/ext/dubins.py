@@ -226,13 +226,15 @@ def dubins_traj(param,step):
         if(tprime<param1):
             seg1_end = path[i]
         elif(tprime<(param1+param2)):
+            if seg1_end is None:
+                seg1_end = path[i]
             seg2_end = path[i]
-        else:
-            seg3_end = path[i]
+        elif seg2_end is None:
+            seg2_end = path[i]
         x += step
         i+=1
 
-    return path, seg1_end, seg2_end, seg3_end
+    return path, seg1_end, seg2_end
 
 
 def dubins_path(param, t):
@@ -353,12 +355,10 @@ def getClosedFormPath(start, target, turnRad):
     pt1 = Waypoint(start[0], start[1], rad2Deg(start[2]))
     pt2 = Waypoint(target[0], target[1], rad2Deg(target[2]))
     param = calcDubinsPath(pt1, pt2, turnRad)
-    path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
+    path, seg1_end, seg2_end = dubins_traj(param,1)
 
     points = [path[0], seg1_end, seg2_end, target]
     return getComponents(param, points)
-
-
 
 def main():
     # User's waypoints: [x, y, heading (degrees)]

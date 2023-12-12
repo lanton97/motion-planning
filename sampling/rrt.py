@@ -72,7 +72,7 @@ class RRT(BaseSamplingPlanner):
             randOrient = self.dynamics.getRandomOrientation()
             endConf = np.array([*self.env.endPos, *randOrient])
             qNew, connector = self.dynamics.sample(mostRecentNode, endConf, self.delConf)
-            graph.addNode(mostRecentNode, endConf, connector)
+            graph.addNode(mostRecentNode, qNew, connector)
 
         return connectionFound
 
