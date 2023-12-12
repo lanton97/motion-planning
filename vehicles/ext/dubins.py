@@ -17,12 +17,27 @@ TODOS:
 - Reduce computation time using the classification methods in the paper
 
 """
+# NOTE: This is a modified version of the original code, mainly changed to
+# support output in radians and as a series of straight segments and arcs
+# This is useful for plotting later on
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc
 import math
 import numpy as np
 from enum import Enum
+
+class arcSeg():
+    def __init__(self, centre, th1, th2, radius):
+        self.centre = centre
+        self.th1 = th1
+        self.th2 = th2
+        self.rad = radius
+
+class straightLine():
+    def __init__(self, p1, p2):
+        self.p1 = p1
+        self.p2 = p2
 
 class TurnType(Enum):
     LSL = 1
@@ -302,6 +317,48 @@ def getTheta(centre, point):
     theta = np.arctan2(y, x)
     return theta
 
+# Return an arc segment, straight line, and arcsegment for plotting
+def getComponents(param, points):
+    curveType = param.type
+    # which centre is chosen and the order of the thetas for the
+    # arc are dependent on the direction of the curve
+    firstCurve = None
+    print(curveType)
+    if curveType in [TurnType.RSL, TurnType.RSR]:
+        _, centre = centers(points[0], points[1], param.turn_radius)
+        th1 = getTheta(centre, points[1]) 
+        th2 = getTheta(centre, points[0])
+        firstCurve = arcSeg(centre, th1, th2, param.turn_radius)
+    else:
+        centre,_ = centers(points[0], points[1], param.turn_radius)
+        th1 = getTheta(centre, points[0]) 
+        th2 = getTheta(centre, points[1])
+        firstCurve = arcSeg(centre, th1, th2, param.turn_radius)
+    straightSeg = straightLine(points[1], points[2])
+    secondCurve = None
+    if curveType in [TurnType.LSR, TurnType.RSR]:
+        _, centre = centers(points[2], points[3], param.turn_radius)
+        th1 = getTheta(centre, points[3]) 
+        th2 = getTheta(centre, points[2])
+        secondCurve = arcSeg(centre, th1, th2, param.turn_radius)
+    else:
+        centre,_ = centers(points[2], points[3], param.turn_radius)
+        th1 = getTheta(centre, points[2]) 
+        th2 = getTheta(centre, points[3])
+        secondCurve = arcSeg(centre, th1, th2, param.turn_radius)
+
+    return firstCurve, straightSeg, secondCurve
+
+def getClosedFormPath(start, target, turnRad):
+    pt1 = Waypoint(start[0], start[1], start[2])
+    pt2 = Waypoint(target[0], target[1], target[2])
+    param = calcDubinsPath(pt1, pt2, turnRad)
+    path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
+
+    points = [path[0], seg1_end, seg2_end, seg3_end]
+    return getComponents(param, points)
+
+
 
 def main():
     # User's waypoints: [x, y, heading (degrees)]
@@ -314,28 +371,16 @@ def main():
     i = 0
     fig, ax = plt.subplots()
 
-    while i<len(Wptz)-1:
-        param = calcDubinsPath(Wptz[i], Wptz[i+1], 5)
-        path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
+    #while i<len(Wptz)-1:
+    #    param = calcDubinsPath(Wptz[i], Wptz[i+1], 5)
+    #    path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
 
-        i+=1
+    #    i+=1
 
-    
-    begin_centres = centers([0,0, 0], seg1_end, param.turn_radius)
-    centres = centers(seg2_end, seg3_end, param.turn_radius)
-
-    th1 = getTheta(centres[0], seg2_end)
-    th2 = getTheta(centres[0], seg3_end)
-
-    patch1 = Arc(centres[0], 10.0, 10.0, theta1=(th1)*180/np.pi, theta2=(th2)*180/np.pi, color='red', lw=1)
-
-    th2 = getTheta(begin_centres[1], path[0])
-    th1 = getTheta(begin_centres[1], seg1_end)
-    patch2 = Arc(begin_centres[1], 10.0, 10.0, theta1=(th1)*180/np.pi, theta2=(th2)*180/np.pi, color='red', lw=1)
-
-
-
-    ax.plot([seg1_end[0], seg2_end[0]], [seg1_end[1], seg2_end[1]], 'r-') 
+    arc1, straight, arc2 =  getClosedFormPath((0,0,0), (80,70,260), 5)
+    patch1 = Arc(arc1.centre, 10.0, 10.0, theta1=(arc1.th1)*180/np.pi, theta2=(arc1.th2)*180/np.pi, color='red', lw=1)
+    patch2 = Arc(arc2.centre, 10.0, 10.0, theta1=(arc2.th1)*180/np.pi, theta2=(arc2.th2)*180/np.pi, color='red', lw=1)
+    ax.plot([straight.p1[0], straight.p2[0]], [straight.p1[1], straight.p2[1]], 'r-') 
 
     ax.add_patch(patch1)
     ax.add_patch(patch2)
