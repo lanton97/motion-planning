@@ -323,8 +323,7 @@ def getComponents(param, points):
     # which centre is chosen and the order of the thetas for the
     # arc are dependent on the direction of the curve
     firstCurve = None
-    print(curveType)
-    if curveType in [TurnType.RSL, TurnType.RSR]:
+    if curveType in [TurnType.RSL, TurnType.RSR, TurnType.RLR]:
         _, centre = centers(points[0], points[1], param.turn_radius)
         th1 = getTheta(centre, points[1]) 
         th2 = getTheta(centre, points[0])
@@ -334,7 +333,22 @@ def getComponents(param, points):
         th1 = getTheta(centre, points[0]) 
         th2 = getTheta(centre, points[1])
         firstCurve = arcSeg(centre, th1, th2, param.turn_radius)
-    straightSeg = straightLine(points[1], points[2])
+    
+    segment2 = None
+    if curveType in [TurnType.LSR, TurnType.RSR, TurnType.RSL, TurnType.LSL]:
+        segment2 = straightLine(points[1], points[2])
+    elif curveType in[LRL]:
+        _, centre = centers(points[1], points[2], param.turn_radius)
+        th1 = getTheta(centre, points[2]) 
+        th2 = getTheta(centre, points[1])
+        segment2 = arcSeg(centre, th1, th2, param.turn_radius)
+    else:
+        centre,_ = centers(points[1], points[2], param.turn_radius)
+        th1 = getTheta(centre, points[1]) 
+        th2 = getTheta(centre, points[2])
+        segment2 = arcSeg(centre, th1, th2, param.turn_radius)
+
+
     secondCurve = None
     if curveType in [TurnType.LSR, TurnType.RSR]:
         _, centre = centers(points[2], points[3], param.turn_radius)
@@ -347,11 +361,11 @@ def getComponents(param, points):
         th2 = getTheta(centre, points[3])
         secondCurve = arcSeg(centre, th1, th2, param.turn_radius)
 
-    return firstCurve, straightSeg, secondCurve
+    return firstCurve, segment2, secondCurve
 
 def getClosedFormPath(start, target, turnRad):
-    pt1 = Waypoint(start[0], start[1], start[2])
-    pt2 = Waypoint(target[0], target[1], target[2])
+    pt1 = Waypoint(start[0], start[1], rad2Deg(start[2]))
+    pt2 = Waypoint(target[0], target[1], rad2Deg(target[2]))
     param = calcDubinsPath(pt1, pt2, turnRad)
     path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
 
@@ -362,22 +376,9 @@ def getClosedFormPath(start, target, turnRad):
 
 def main():
     # User's waypoints: [x, y, heading (degrees)]
-    pt1 = Waypoint(0,0,0)
-    pt2 = Waypoint(80,70,260)
-    #pt3 = Waypoint(1000,15000,180)
-    #pt4 = Waypoint(0,0,270)
-    Wptz = [pt1, pt2]
-    # Run the code
-    i = 0
     fig, ax = plt.subplots()
 
-    #while i<len(Wptz)-1:
-    #    param = calcDubinsPath(Wptz[i], Wptz[i+1], 5)
-    #    path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
-
-    #    i+=1
-
-    arc1, straight, arc2 =  getClosedFormPath((0,0,0), (80,70,260), 5)
+    arc1, straight, arc2 =  getClosedFormPath((0,0,0), (-80,70,2.5), 5)
     patch1 = Arc(arc1.centre, 10.0, 10.0, theta1=(arc1.th1)*180/np.pi, theta2=(arc1.th2)*180/np.pi, color='red', lw=1)
     patch2 = Arc(arc2.centre, 10.0, 10.0, theta1=(arc2.th1)*180/np.pi, theta2=(arc2.th2)*180/np.pi, color='red', lw=1)
     ax.plot([straight.p1[0], straight.p2[0]], [straight.p1[1], straight.p2[1]], 'r-') 
