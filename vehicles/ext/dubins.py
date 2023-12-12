@@ -211,7 +211,7 @@ def dubins_traj(param,step):
     # Build the trajectory from the lowest-cost path
     x = 0
     i = 0
-    length = (param.seg_final[0]+param.seg_final[1]+param.seg_final[2])*param.turn_radius
+    length = (param.seg_final[0]+param.seg_final[1]+param.seg_final[2])*param.turn_radius*5
     length = math.floor(length/step)
     path = -1 * np.ones((length,3))
     seg1_end = None
@@ -222,7 +222,7 @@ def dubins_traj(param,step):
 
     while x < length:
         path[i] = dubins_path(param,x)
-        tprime = x / param.turn_radius
+        tprime = x / (param.turn_radius*5)
         if(tprime<param1):
             seg1_end = path[i]
         elif(tprime<(param1+param2)):
@@ -239,7 +239,7 @@ def dubins_traj(param,step):
 
 def dubins_path(param, t):
     # Helper function for curve generation
-    tprime = t/param.turn_radius
+    tprime = t/(param.turn_radius*5)
     p_init = np.array([0,0,headingToStandard(param.p_init.psi)*math.pi/180])
     #
     L_SEG = 1
