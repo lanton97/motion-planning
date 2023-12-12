@@ -47,6 +47,17 @@ class BaseContinuousRenderer:
         for node in nodes_tf:
             gfxdraw.filled_circle(self._surface, int(node[0]), int(node[1]), 1, GREY)
 
+    def draw_lines_and_curves(self, connectors):
+        connectors_tf = deepcopy(connectors)
+        for connector in connectors:
+            if type(connector) is 'arcSeg':
+                connector = self._translate_arc_seg(connector)
+                gfxdraw.arc(self._surface, int(connector.centre[0]), int(connector.centre[1]), int(connector.rad), int(rad2deg(connector.th1)), int(rad2deg(connector.th2)), GREY)
+            else:
+                connector = self._translate_line(connector)
+                gfxdraw.line(self._surface, int(connector[0][0]), int(connector[0][1]), int(connector[1][0]), int(connector[1][1]), GREY)
+
+
     # Draw straight edge connections between nodes
     # Requires the start node and end node positions
     def draw_lines(self, lines):
@@ -74,13 +85,30 @@ class BaseContinuousRenderer:
     # The following functions translate the positions of objects from a zero-centred 
     # coordinate system into the screen coordinates for drawing
 
+    def _translate_arc_segs(self, arc_segs):
+        for arcSeg in arc_segs:
+            arcSeg = self._translate_arc_seg(arcSeg)
+        return arc_segs
+
+    
+    def _translate_arc_seg(self, arc_seg):
+        centre = arc_seg.centre
+        arc_seg.centre[0] += int(self._width / 2)
+        arc_seg.centre[1] += int(self._height / 2)
+        return arc_seg
+
+
     def _translate_lines(self, lines):
         for line in lines:
-            line[0][0] += int(self._width / 2)
-            line[0][1] += int(self._height / 2)
-            line[1][0] += int(self._width / 2)
-            line[1][1] += int(self._height / 2)
+            line = self._translate_lines(line)
         return lines
+
+    def _translate_line(self, line):
+        line[0][0] += int(self._width / 2)
+        line[0][1] += int(self._height / 2)
+        line[1][0] += int(self._width / 2)
+        line[1][1] += int(self._height / 2)
+        return line
 
     def _translate_points(self, points):
         for point in points:

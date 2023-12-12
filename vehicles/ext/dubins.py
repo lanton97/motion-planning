@@ -26,18 +26,9 @@ from matplotlib.patches import Arc
 import math
 import numpy as np
 from enum import Enum
+from common.geom import straightLine, arcSeg
+from common.util import rad2Deg, deg2Rad
 
-class arcSeg():
-    def __init__(self, centre, th1, th2, radius):
-        self.centre = centre
-        self.th1 = th1
-        self.th2 = th2
-        self.rad = radius
-
-class straightLine():
-    def __init__(self, p1, p2):
-        self.p1 = p1
-        self.p2 = p2
 
 class TurnType(Enum):
     LSL = 1
@@ -82,12 +73,6 @@ def wrapTo180(angle):
     if(q):
         angle = wrapTo360(angle + 180) - 180
     return angle
-
-def rad2Deg(radians):
-    return radians*180/np.pi
-
-def deg2Rad(degrees):
-    return degrees/180*np.pi
 
 def headingToStandard(hdg):
     # Convert NED heading to standard unit cirlce...degrees only for now (Im lazy)
@@ -334,6 +319,7 @@ def getComponents(param, points):
         th2 = getTheta(centre, points[1])
         firstCurve = arcSeg(centre, th1, th2, param.turn_radius)
     
+    # Similar to before but account for the possibility of straight or curved segmentts
     segment2 = None
     if curveType in [TurnType.LSR, TurnType.RSR, TurnType.RSL, TurnType.LSL]:
         segment2 = straightLine(points[1], points[2])
@@ -347,7 +333,6 @@ def getComponents(param, points):
         th1 = getTheta(centre, points[1]) 
         th2 = getTheta(centre, points[2])
         segment2 = arcSeg(centre, th1, th2, param.turn_radius)
-
 
     secondCurve = None
     if curveType in [TurnType.LSR, TurnType.RSR]:
@@ -363,6 +348,7 @@ def getComponents(param, points):
 
     return firstCurve, segment2, secondCurve
 
+# Find the shortest dubins path given a start and end configuration and constraints
 def getClosedFormPath(start, target, turnRad):
     pt1 = Waypoint(start[0], start[1], rad2Deg(start[2]))
     pt2 = Waypoint(target[0], target[1], rad2Deg(target[2]))
