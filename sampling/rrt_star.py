@@ -12,7 +12,6 @@ from sampling.costs.dist import distanceCost
 # and walls
 class RRTStar(BaseSamplingPlanner):
     def __init__(self,
-            initConfig,
             environment,
             deltaConf,
             neighbourDist=20,
@@ -20,11 +19,10 @@ class RRTStar(BaseSamplingPlanner):
             vehicleDynamics=None,
             costFunction=distanceCost,
             ):
-        super().__init__(initConfig, environment)
+        super().__init__(environment, vehicleDynamics)
         self.delConf = deltaConf
         self.neighbourDist=neighbourDist
         self.collChecker = positionCollisionChecker(2, 2, 2)
-        self.dynamics = vehicleDynamics()
         self.costFunc = costFunction
 
     def plan(self, numSamples, render=True):

@@ -19,7 +19,6 @@ class RRT(BaseSamplingPlanner):
         super().__init__(environment, vehicleDynamics)
         self.delConf = deltaConf
         self.collChecker = positionCollisionChecker(2, 2, 2)
-        self.dynamics = vehicleDynamics()
 
     def plan(self, numSamples, render=True):
         initNode = ConfigurationNode(self.initConfig)

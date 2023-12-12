@@ -39,7 +39,7 @@ class CostConfigurationGraph(ConfigurationGraph):
         nodeList= []
         for node in self.nodes:
             # The default np norm is l2, i.e. the distance
-            dist = np.linalg.norm(np.array(position) - np.array(node.config[:self.posDim]))
+            dist = np.linalg.norm(np.array(position[:self.posDim]) - np.array(node.config[:self.posDim]))
             if dist < delta:
                 nodeList.append(node)
         return nodeList
@@ -49,7 +49,7 @@ class CostConfigurationGraph(ConfigurationGraph):
         lowestCostNode = initCandidate
         for node in self.nodes:
             # The default np norm is l2, i.e. the distance
-            dist = np.linalg.norm(np.array(position) - np.array(node.config[:self.posDim]))
+            dist = np.linalg.norm(np.array(position[:self.posDim]) - np.array(node.config[:self.posDim]))
             cost = costFunc(position, node.config) + self.costs[node]
 
             if dist < delta and cost < minCost:
@@ -61,7 +61,7 @@ class CostConfigurationGraph(ConfigurationGraph):
 
     def rewireIfCheaper(self, node, potentialChild, costFunc, dynamics, rewireDist):
         if costFunc(node.config, potentialChild.config) + self.costs[node] < self.costs[potentialChild]:
-            _, cost, connector = dynamics.sampleWCost(node, potentialChild, rewireDist, costFunc)
+            _, cost, connector = dynamics.sampleWCost(node.config, potentialChild.config, rewireDist, costFunc)
             edge = Edge(node, connector)
             self.edges[potentialChild] = edge
             self.costs[potentialChild] = costFunc(node.config, potentialChild.config) + self.costs[node]
