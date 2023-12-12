@@ -33,7 +33,7 @@ class dubinsCar():
 
     def sampleWCost(self, nearNode, targetConfiguration, delta, costFunc):
         # The translation from near node to target node
-        translation = targetConfiguration - np.array(nearNode.config)
+        translation = targetConfiguration[:2] - np.array(nearNode.config)[:2]
         # We get the magnitude of the translation
         lenTrans = np.linalg.norm(translation)
         # Get the new translation based on the max delta

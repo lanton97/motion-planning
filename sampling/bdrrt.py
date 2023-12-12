@@ -11,20 +11,20 @@ from sampling.base import *
 # and walls
 class BidirectionalRRT(BaseSamplingPlanner):
     def __init__(self,
-            initConfig,
             environment,
             deltaConf,
             positionCollisionChecker=PointCollisionChecker,
             vehicleDynamics=None,
             ):
-        super().__init__(initConfig, environment)
+        super().__init__(environment, vehicleDynamics)
         self.delConf = deltaConf
         self.collChecker = positionCollisionChecker(2, 2, 2)
-        self.dynamics = vehicleDynamics()
 
     def plan(self, numSamples, render=True):
         initForwardNode = ConfigurationNode(self.initConfig)
-        initBackwardNode = ConfigurationNode(self.env.endPos)
+        randOrient = self.dynamics.getRandomOrientation()
+        endConfig = np.array([*self.env.endPos, *randOrient])
+        initBackwardNode = ConfigurationNode(endConfig)
         forwardGraph = ConfigurationGraph(len(self.initConfig), self.env.dim, initForwardNode)
         backwardGraph = ConfigurationGraph(len(self.initConfig), self.env.dim, initBackwardNode)
         image_data = []
@@ -62,10 +62,10 @@ class BidirectionalRRT(BaseSamplingPlanner):
         # Create a new configuration node closer to the random one by sampling
         # the vehicle dynamics
         # TODO: Add collision checking for new node
-        qNew = self.dynamics.sample(qNear, randConf, self.delConf)
+        qNew, connector = self.dynamics.sample(qNear, randConf, self.delConf)
 
         # Add the new node to the graph
-        graph.addNode(qNear, qNew)
+        graph.addNode(qNear, qNew, connector)
 
     def findConnectionAndConnect(self, forwardGraph, backwardGraph):
         # We only need to check the most recent node of each graph of each node on the opposite graph to find a connection
@@ -112,7 +112,7 @@ class BidirectionalRRT(BaseSamplingPlanner):
         self.renderer.draw_pois(self.env.startPos, self.env.endPos)
         nodeList, edgeList = forwardGraph.getNodeAndEdgeList()
         self.renderer.draw_nodes(nodeList)
-        self.renderer.draw_lines(edgeList)
+        self.renderer.draw_lines_and_curves(edgeList)
         nodeList, edgeList = backwardGraph.getNodeAndEdgeList()
         self.renderer.draw_nodes(nodeList)
         self.renderer.draw_lines_and_curves(edgeList)

@@ -37,7 +37,7 @@ class ConfigurationGraph():
         nearestNode = None
         for node in self.nodes:
             # The default np norm is l2, i.e. the distance
-            dist = np.linalg.norm(np.array(position) - np.array(node.config[:self.posDim]))
+            dist = np.linalg.norm(np.array(position[:self.posDim]) - np.array(node.config[:self.posDim]))
             if dist < minDist:
                 minDist = dist
                 nearestNode = node

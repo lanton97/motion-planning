@@ -2,7 +2,7 @@ import numpy as np
 from sampling.graphs.base import *
 from sampling.graphs.cost_graph import *
 from collisionCheckers.base import PointCollisionChecker
-from sampling.base import *
+from sampling.bdrrt import *
 from sampling.costs.dist import distanceCost
 # Base RRT planner developed from the description in
 # http://lavalle.pl/rrt/about.html
@@ -11,9 +11,8 @@ from sampling.costs.dist import distanceCost
 # dimensionality, and collision checking
 # Does assume only two types of obstacles: points
 # and walls
-class BidirectionalRRTStar(BaseSamplingPlanner):
+class BidirectionalRRTStar(BidirectionalRRT):
     def __init__(self,
-            initConfig,
             environment,
             deltaConf,
             neighbourDist=20,
@@ -21,16 +20,15 @@ class BidirectionalRRTStar(BaseSamplingPlanner):
             vehicleDynamics=None,
             costFunction=distanceCost,
             ):
-        super().__init__(initConfig, environment)
-        self.delConf = deltaConf
-        self.collChecker = positionCollisionChecker(2, 2, 2)
-        self.dynamics = vehicleDynamics()
+        super().__init__(environment, deltaConf, vehicleDynamics=vehicleDynamics, positionCollisionChecker=positionCollisionChecker)
         self.neighbourDist = neighbourDist
         self.costFunc = costFunction
 
     def plan(self, numSamples, render=True):
         initForwardNode = ConfigurationNode(self.initConfig)
-        initBackwardNode = ConfigurationNode(self.env.endPos)
+        randOrient = self.dynamics.getRandomOrientation()
+        endConfig = np.array([*self.env.endPos, *randOrient])
+        initBackwardNode = ConfigurationNode(endConfig)
         forwardGraph = CostConfigurationGraph(len(self.initConfig), self.env.dim, initForwardNode)
         backwardGraph = CostConfigurationGraph(len(self.initConfig), self.env.dim, initBackwardNode)
         image_data = []
@@ -69,17 +67,17 @@ class BidirectionalRRTStar(BaseSamplingPlanner):
         # Create a new configuration node closer to the random one by sampling
         # the vehicle dynamics
         # TODO: Add collision checking for new node
-        qNew, cost = self.dynamics.sampleWCost(qNear, randConf, self.delConf, self.costFunc)
+        qNew, cost, connector = self.dynamics.sampleWCost(qNear, randConf, self.delConf, self.costFunc)
         # Update if there is a cheaper neighbour
         lowCostNeighbour = graph.getLowestCostNeighbour(qNew.config, self.neighbourDist, qNear, cost, self.costFunc)
 
         # Add the new node to the graph
-        graph.addNode(lowCostNeighbour, qNew, self.costFunc)
+        graph.addNode(lowCostNeighbour, qNew, self.costFunc, connector)
 
         # Rewire the tree based on the new node, if it is cheaper
         neighbours = graph.getNeighbourhoodNodes(qNew.config, self.neighbourDist)
         for neighbour in neighbours:
-            graph.rewireIfCheaper(qNew, neighbour, self.costFunc)
+            graph.rewireIfCheaper(qNew, neighbour, self.costFunc, self.dynamics, self.neighbourDist)
 
 
     def findConnectionAndConnect(self, forwardGraph, backwardGraph):
@@ -119,20 +117,5 @@ class BidirectionalRRTStar(BaseSamplingPlanner):
 
         return connectionFound
 
-
-
-    def render(self, forwardGraph, backwardGraph):
-        self.renderer.clear()
-        self.renderer.draw_walls(self.env.walls)
-        self.renderer.draw_pois(self.env.startPos, self.env.endPos)
-        nodeList, edgeList = forwardGraph.getNodeAndEdgeList()
-        self.renderer.draw_nodes(nodeList)
-        self.renderer.draw_lines(edgeList)
-        nodeList, edgeList = backwardGraph.getNodeAndEdgeList()
-        self.renderer.draw_nodes(nodeList)
-        self.renderer.draw_lines(edgeList)
-        self.renderer.update()
-        img_data = self.renderer.pull_array()
-        return img_data
 
 
