@@ -19,37 +19,19 @@ class RRT(BaseSamplingPlanner):
         super().__init__(environment, vehicleDynamics)
         self.delConf = deltaConf
         self.collChecker = positionCollisionChecker(2, 2, 2)
+        self.configNodeType = ConfigurationNode
+        self.configGraphType = ConfigurationGraph
 
     def plan(self, numSamples, render=True):
-        initNode = ConfigurationNode(self.initConfig)
-        graph = ConfigurationGraph(len(self.initConfig), self.env.dim, initNode)
+        initNode = self.configNodeType(self.initConfig)
+        graph = self.configGraphType(len(self.initConfig), self.env.dim, initNode)
         image_data = []
 
         for i in range(numSamples):
             # Sample a random position
-            randPos = self.env.getRandomPosition()
-            # Check that the position is not a collision
-            # This may need to change for more complex collisions than what is
-            # implemented
-            while self.collChecker.checkPointCollisions(randPos, self.env.obst) or \
-                    self.collChecker.checkWallCollisions(randPos, self.env.walls):
-                        randPos = self.env.getRandomPosition()
+            self.expandGraph(graph)
 
-            randOrient = self.dynamics.getRandomOrientation()
-            randConf = np.array([*randPos, *randOrient])
-            # Get the nearest node to the position
-            qNear = graph.getNearestNode(randPos)
-            # Create a new configuration node closer to the random one by sampling
-            # the vehicle dynamics
-            # TODO: Add collision checking for new node
-            qNew, connector = self.dynamics.sample(qNear, randConf, self.delConf)
-
-
-            # Add the new node to the graph
-            graph.addNode(qNear, qNew, connector)
-            if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config], self.delConf):
-                #endNode = ConfigurationNode(self.env.endPos)
-                #graph.addNode(qNew, endNode)
+            if self.findConnectionAndConnect(graph):
                 print("Path Found")
                 break
 
@@ -61,6 +43,38 @@ class RRT(BaseSamplingPlanner):
 
         return graph, image_data
 
+    def expandGraph(self, graph):
+        randPos = self.env.getRandomPosition()
+        # Check that the position is not a collision
+        # This may need to change for more complex collisions than what is
+        # implemented
+        while self.collChecker.checkPointCollisions(randPos, self.env.obst) or \
+                self.collChecker.checkWallCollisions(randPos, self.env.walls):
+                    randPos = self.env.getRandomPosition()
+
+        randOrient = self.dynamics.getRandomOrientation()
+        randConf = np.array([*randPos, *randOrient])
+        # Get the nearest node to the position
+        qNear = graph.getNearestNode(randPos)
+        # Create a new configuration node closer to the random one by sampling
+        # the vehicle dynamics
+        # TODO: Add collision checking for new node
+        qNew, connector = self.dynamics.sample(qNear, randConf, self.delConf)
+
+        # Add the new node to the graph
+        graph.addNode(qNear, qNew, connector)
+
+    def findConnectionAndConnect(self, graph):
+        mostRecentNode = graph.nodes[-1]
+        connectionFound = False
+        if np.linalg.norm(mostRecentNode.config[:self.env.dim] - self.env.endPos) < self.delConf:
+            connectionFound = True
+            randOrient = self.dynamics.getRandomOrientation()
+            endConf = np.array([*self.env.endPos, *randOrient])
+            qNew, connector = self.dynamics.sample(mostRecentNode, endConf, self.delConf)
+            graph.addNode(mostRecentNode, endConf, connector)
+
+        return connectionFound
 
 
 
