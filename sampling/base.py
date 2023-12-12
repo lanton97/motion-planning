@@ -6,13 +6,15 @@ from copy import deepcopy
 # A simple base planner acting as a virtual class
 class BaseSamplingPlanner():
     def __init__(self,
-            initConfig,
             environment,
+            vehicleDynamics,
             ):
-
-        self.initConfig = initConfig
         self.env = environment
         self.renderer = BaseContinuousRenderer()
+        self.dynamics = vehicleDynamics()
+        randOrient = self.dynamics.getRandomOrientation()
+        initConfig = np.array([*self.env.startPos, *randOrient])
+        self.initConfig = initConfig
         
     def plan(self):
         raise NotImplementedError

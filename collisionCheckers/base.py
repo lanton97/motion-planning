@@ -19,7 +19,7 @@ class PointCollisionChecker():
             delta = self.collDist
         pos = np.array(config[:self.posDim])
         for point in pointList:
-            dist = np.linalg.norm(pos - np.array(point))
+            dist = np.linalg.norm(pos - np.array(point[:2]))
             if dist <= delta:
                 return True
         return False
@@ -27,7 +27,7 @@ class PointCollisionChecker():
     def checkWallCollisions(self, config, wallList):
         pos = np.array(config[:self.posDim])
         for wall in wallList:
-            dist = np.linalg.norm(pos - np.array(point))
+            dist = np.linalg.norm(pos - np.array(point[:2]))
             if dist <= self.collDist:
                 return True
         return False

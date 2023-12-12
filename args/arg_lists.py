@@ -11,10 +11,12 @@ algorithms = {
 
 vehicles = {
         'particle-2d': particleDynamics2D,
+        'dubins': dubinsCar
         }
 
 maps = {
         'empty-2D': Empty2DEnv,
         'maze-2D': BasicMazeEnv,
         }
+
 

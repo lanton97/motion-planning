@@ -11,13 +11,12 @@ from sampling.base import *
 # and walls
 class RRT(BaseSamplingPlanner):
     def __init__(self,
-            initConfig,
             environment,
             deltaConf,
             positionCollisionChecker=PointCollisionChecker,
             vehicleDynamics=None,
             ):
-        super().__init__(initConfig, environment)
+        super().__init__(environment, vehicleDynamics)
         self.delConf = deltaConf
         self.collChecker = positionCollisionChecker(2, 2, 2)
         self.dynamics = vehicleDynamics()

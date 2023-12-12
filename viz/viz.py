@@ -3,6 +3,7 @@ from pygame import gfxdraw
 import time
 from copy import deepcopy
 from common.geom import *
+from common.util import *
 
 # Colour Presets
 RED = (255, 0, 0)
@@ -53,7 +54,7 @@ class BaseContinuousRenderer:
         for connector in connectors:
             if type(connector) is arcSeg:
                 connector = self._translate_arc_seg(connector)
-                gfxdraw.arc(self._surface, int(connector.centre[0]), int(connector.centre[1]), int(connector.rad), int(rad2deg(connector.th1)), int(rad2deg(connector.th2)), GREY)
+                gfxdraw.arc(self._surface, int(connector.centre[0]), int(connector.centre[1]), int(connector.rad), int(rad2Deg(connector.th1)), int(rad2Deg(connector.th2)), GREY)
             else:
                 connector = self._translate_line(connector)
                 gfxdraw.line(self._surface, int(connector.p1[0]), int(connector.p1[1]), int(connector.p2[0]), int(connector.p2[1]), GREY)
@@ -94,8 +95,9 @@ class BaseContinuousRenderer:
     
     def _translate_arc_seg(self, arc_seg):
         centre = arc_seg.centre
-        arc_seg.centre[0] += int(self._width / 2)
-        arc_seg.centre[1] += int(self._height / 2)
+        centre[0] += int(self._width / 2)
+        centre[1] += int(self._height / 2)
+        arc_seg.centre = centre
         return arc_seg
 
 

@@ -39,7 +39,7 @@ if args.veh not in vehicles.keys():
 
 env = maps[args.map]()
 vehicle = vehicles[args.veh]
-planner = algorithms[args.alg](env.startPos, env, 10.0, vehicleDynamics=vehicle)
+planner = algorithms[args.alg](env, 10.0, vehicleDynamics=vehicle)
 render = False
 if args.rend:
     render = True
