@@ -62,7 +62,7 @@ class RRTStar(RRT):
             connectionFound = True
             randOrient = self.dynamics.getRandomOrientation()
             endConf = np.array([*self.env.endPos, *randOrient])
-            qNew, connector = self.dynamics.sampleWCost(mostRecentNode, endConf, self.delConf, self.costFunc)
+            qNew, cost, connector = self.dynamics.sampleWCost(mostRecentNode, endConf, self.delConf, self.costFunc)
             graph.addNode(mostRecentNode, qNew, self.costFunc, connector)
 
         return connectionFound
