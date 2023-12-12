@@ -24,20 +24,6 @@ import math
 import numpy as np
 from enum import Enum
 
-def getTurnCentres(start, target, turnRad):
-    lstart_th = start[2] + np.pi/2
-    rstart_th = start[2] - np.pi/2
-    lend_th   = target[2] + np.pi/2
-    rend_th   = target[2] - np.pi/2
-
-    # Calculate the possible turn centres for the start and end turns
-    lstart = np.array([start[0] + np.cos(lstart_th)*turnRad, start[1] + np.sin(lstart_th)*turnRad])
-    rstart = np.array([start[0] + np.cos(rstart_th)*turnRad, start[1] + np.sin(rstart_th)*turnRad])
-    lend = np.array([target[0] + np.cos(lend_th)*turnRad, target[1] + np.sin(lend_th)*turnRad])
-    rend = np.array([target[0] + np.cos(rend_th)*turnRad, target[1] + np.sin(rend_th)*turnRad])
-
-    return lstart, rstart, lend, rend
-
 class TurnType(Enum):
     LSL = 1
     LSR = 2
@@ -332,27 +318,8 @@ def main():
         param = calcDubinsPath(Wptz[i], Wptz[i+1], 5)
         path, seg1_end, seg2_end, seg3_end = dubins_traj(param,1)
 
-
-        # Plot the results
-        #ax.plot(Wptz[i].x,Wptz[i].y,'kx')
-        #ax.plot(Wptz[i+1].x,Wptz[i+1].y,'kx')
-        #ax.plot(path[:,0],path[:,1],'b-')
         i+=1
 
-    # Calculate possible circles
-    '''q = sqrt((x2-x1)^2 + (y2-y1)^2)
-
-    y3 = (y1+y2)/2
-
-    x3 = (x1+x2)/2 
-
-    x = x3 + sqrt(r^2-(q/2)^2)*(y1-y2)/q
-
-    y = y3 + sqrt(r^2-(q/2)^2)*(x2-x1)/q  
-
-    x = x3 - sqrt(r^2-(q/2)^2)*(y1-y2)/q
-
-    y = y3 - sqrt(r^2-(q/2)^2)*(x2-x1)/q  '''
     
     begin_centres = centers([0,0, 0], seg1_end, param.turn_radius)
     centres = centers(seg2_end, seg3_end, param.turn_radius)
@@ -360,7 +327,6 @@ def main():
     th1 = getTheta(centres[0], seg2_end)
     th2 = getTheta(centres[0], seg3_end)
 
-    #patch1 = Arc(centres[0], 10.0, 10.0, theta1=(seg2_end[2] + np.pi/2)*180/np.pi, theta2=(seg3_end[2] + np.pi/2)*180/np.pi, color='red', lw=1)
     patch1 = Arc(centres[0], 10.0, 10.0, theta1=(th1)*180/np.pi, theta2=(th2)*180/np.pi, color='red', lw=1)
 
     th2 = getTheta(begin_centres[1], path[0])
@@ -369,18 +335,16 @@ def main():
 
 
 
-    #ax.plot([0, seg1_end[0]], [0, seg1_end[1]]) 
     ax.plot([seg1_end[0], seg2_end[0]], [seg1_end[1], seg2_end[1]], 'r-') 
-    #ax.plot([seg2_end[0], seg3_end[0]], [seg2_end[1], seg3_end[1]], 'r-') 
 
     ax.add_patch(patch1)
     ax.add_patch(patch2)
 
-    #plt.grid(True)
-    #plt.axis("equal")
-    #plt.title('Dubin\'s Curves Trajectory Generation')
-    #plt.xlabel('X')
-    #plt.ylabel('Y')
+    plt.grid(True)
+    plt.axis("equal")
+    plt.title('Dubin\'s Curves Trajectory Generation')
+    plt.xlabel('X')
+    plt.ylabel('Y')
     plt.show()
 
 
