@@ -115,7 +115,7 @@ class BidirectionalRRT(BaseSamplingPlanner):
         self.renderer.draw_lines(edgeList)
         nodeList, edgeList = backwardGraph.getNodeAndEdgeList()
         self.renderer.draw_nodes(nodeList)
-        self.renderer.draw_lines(edgeList)
+        self.renderer.draw_lines_and_curves(edgeList)
         self.renderer.update()
         img_data = self.renderer.pull_array()
         return img_data

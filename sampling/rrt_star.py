@@ -64,7 +64,7 @@ class RRTStar(BaseSamplingPlanner):
 
             if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config], self.delConf):
                 endNode = ConfigurationNode(self.env.endPos)
-                graph.addNode(qNew, endNode)
+                graph.addNode(qNew, endNode, self.costFunc)
                 print("Path Found")
                 break
 

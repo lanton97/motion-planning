@@ -2,6 +2,7 @@ import pygame
 from pygame import gfxdraw
 import time
 from copy import deepcopy
+from common.geom import *
 
 # Colour Presets
 RED = (255, 0, 0)
@@ -50,12 +51,12 @@ class BaseContinuousRenderer:
     def draw_lines_and_curves(self, connectors):
         connectors_tf = deepcopy(connectors)
         for connector in connectors:
-            if type(connector) is 'arcSeg':
+            if type(connector) is arcSeg:
                 connector = self._translate_arc_seg(connector)
                 gfxdraw.arc(self._surface, int(connector.centre[0]), int(connector.centre[1]), int(connector.rad), int(rad2deg(connector.th1)), int(rad2deg(connector.th2)), GREY)
             else:
                 connector = self._translate_line(connector)
-                gfxdraw.line(self._surface, int(connector[0][0]), int(connector[0][1]), int(connector[1][0]), int(connector[1][1]), GREY)
+                gfxdraw.line(self._surface, int(connector.p1[0]), int(connector.p1[1]), int(connector.p2[0]), int(connector.p2[1]), GREY)
 
 
     # Draw straight edge connections between nodes
@@ -63,7 +64,7 @@ class BaseContinuousRenderer:
     def draw_lines(self, lines):
         lines_tf = self._translate_lines(deepcopy(lines))
         for line in lines_tf:
-            gfxdraw.line(self._surface, int(line[0][0]), int(line[0][1]), int(line[1][0]), int(line[1][1]), GREY)
+            gfxdraw.line(self._surface, int(line.p1[0]), int(line.p1[1]), int(line.p2[0]), int(line.p2[1]), GREY)
 
     # Update the windows
     def update(self):
@@ -104,10 +105,10 @@ class BaseContinuousRenderer:
         return lines
 
     def _translate_line(self, line):
-        line[0][0] += int(self._width / 2)
-        line[0][1] += int(self._height / 2)
-        line[1][0] += int(self._width / 2)
-        line[1][1] += int(self._height / 2)
+        line.p1[0] += int(self._width / 2)
+        line.p1[1] += int(self._height / 2)
+        line.p2[0] += int(self._width / 2)
+        line.p2[1] += int(self._height / 2)
         return line
 
     def _translate_points(self, points):

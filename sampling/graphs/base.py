@@ -1,9 +1,15 @@
 import numpy as np
 from copy import deepcopy
+from common.geom import *
 
 class ConfigurationNode():
     def __init__(self, configuration):
         self.config = configuration
+
+class Edge():
+    def __init__(self, parentNode, connectors):
+        self.connectors = connectors
+        self.parentNode = parentNode
 
 # This graph is used to hold the configurations and connections
 # for sampling based planners
@@ -19,9 +25,11 @@ class ConfigurationGraph():
     # Between the node and it's parent
     def addNode(self,
             parentNode: ConfigurationNode,
-            node: ConfigurationNode):
+            node: ConfigurationNode,
+            connector):
+        edge = Edge(parentNode, connector)
         self.nodes.append(node)
-        self.edges[node] = parentNode
+        self.edges[node] = edge
 
     # Return the node with the configuration closest to the given position
     def getNearestNode(self, position):
@@ -41,8 +49,9 @@ class ConfigurationGraph():
             nodeList.append(node.config)
 
         edgeList = []
-        for node, parent in self.edges.items():
-            edgeList.append((deepcopy(node.config), deepcopy(parent.config)))
+        for node, edge in self.edges.items():
+            for connector in edge.connectors:
+                edgeList.append(deepcopy(connector))
 
         return nodeList, edgeList
 

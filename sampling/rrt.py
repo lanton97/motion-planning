@@ -44,14 +44,14 @@ class RRT(BaseSamplingPlanner):
             # Create a new configuration node closer to the random one by sampling
             # the vehicle dynamics
             # TODO: Add collision checking for new node
-            qNew = self.dynamics.sample(qNear, randConf, self.delConf)
+            qNew, connector = self.dynamics.sample(qNear, randConf, self.delConf)
 
 
             # Add the new node to the graph
-            graph.addNode(qNear, qNew)
+            graph.addNode(qNear, qNew, connector)
             if self.collChecker.checkPointCollisions(self.env.endPos, [qNew.config], self.delConf):
-                endNode = ConfigurationNode(self.env.endPos)
-                graph.addNode(qNew, endNode)
+                #endNode = ConfigurationNode(self.env.endPos)
+                #graph.addNode(qNew, endNode)
                 print("Path Found")
                 break
 

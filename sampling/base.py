@@ -23,7 +23,7 @@ class BaseSamplingPlanner():
         self.renderer.draw_pois(self.env.startPos, self.env.endPos)
         nodeList, edgeList = graph.getNodeAndEdgeList()
         self.renderer.draw_nodes(nodeList)
-        self.renderer.draw_lines(edgeList)
+        self.renderer.draw_lines_and_curves(edgeList)
         self.renderer.update()
         img_data = self.renderer.pull_array()
         return img_data
