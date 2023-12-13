@@ -66,9 +66,6 @@ class BidirectionalRRT(BaseSamplingPlanner):
             # Add the new node to the graph
             graph.addNode(qNear, qNew, connector)
 
-        # Add the new node to the graph
-        graph.addNode(qNear, qNew, connector)
-
     def findConnectionAndConnect(self, forwardGraph, backwardGraph):
         # We only need to check the most recent node of each graph of each node on the opposite graph to find a connection
         newestForwardNode = forwardGraph.nodes[-1]
