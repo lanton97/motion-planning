@@ -1,8 +1,8 @@
 import numpy as np
-from common.intersect import *
+from common.intersection import *
 from common.geom import *
 
-class collChecker():
+class CollChecker():
     def __init__(self,
             positionDimensionality,
             ):

@@ -1,6 +1,6 @@
 import numpy as np
 from sampling.graphs.base import *
-from collisionCheckers.base import PointCollisionChecker
+from collisionCheckers.coll import CollChecker
 from sampling.base import *
 # Base RRT planner developed from the description in
 # http://lavalle.pl/rrt/about.html
@@ -13,12 +13,12 @@ class BidirectionalRRT(BaseSamplingPlanner):
     def __init__(self,
             environment,
             deltaConf,
-            positionCollisionChecker=PointCollisionChecker,
+            collChecker=CollChecker,
             vehicleDynamics=None,
             ):
         super().__init__(environment, vehicleDynamics)
         self.delConf = deltaConf
-        self.collChecker = positionCollisionChecker(2, 2, 2)
+        self.collChecker = collChecker(self.env.dim)
         self.configNodeType = ConfigurationNode
         self.configGraphType = ConfigurationGraph
 
@@ -51,12 +51,6 @@ class BidirectionalRRT(BaseSamplingPlanner):
     def expandGraph(self, graph):
         # Sample a random position
         randPos = self.env.getRandomPosition()
-        # Check that the position is not a collision
-        # This may need to change for more complex collisions than what is
-        # implemented
-        while self.collChecker.checkPointCollisions(randPos, self.env.obst) or \
-                self.collChecker.checkWallCollisions(randPos, self.env.walls):
-                    randPos = self.env.getRandomPosition()
 
         randOrient = self.dynamics.getRandomOrientation()
         randConf = np.array([*randPos, *randOrient])
@@ -66,6 +60,11 @@ class BidirectionalRRT(BaseSamplingPlanner):
         # the vehicle dynamics
         # TODO: Add collision checking for new node
         qNew, connector = self.dynamics.sample(qNear, randConf, self.delConf)
+
+        # Check new connection for collisions
+        if not self.collChecker.checkCollisions(connector, self.env):
+            # Add the new node to the graph
+            graph.addNode(qNear, qNew, connector)
 
         # Add the new node to the graph
         graph.addNode(qNear, qNew, connector)

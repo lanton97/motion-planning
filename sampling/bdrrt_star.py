@@ -1,7 +1,6 @@
 import numpy as np
 from sampling.graphs.base import *
 from sampling.graphs.cost_graph import *
-from collisionCheckers.base import PointCollisionChecker
 from sampling.bdrrt import *
 from sampling.costs.dist import distanceCost
 # Base RRT planner developed from the description in
@@ -16,11 +15,11 @@ class BidirectionalRRTStar(BidirectionalRRT):
             environment,
             deltaConf,
             neighbourDist=20,
-            positionCollisionChecker=PointCollisionChecker,
+            collChecker=CollChecker,
             vehicleDynamics=None,
             costFunction=distanceCost,
             ):
-        super().__init__(environment, deltaConf, vehicleDynamics=vehicleDynamics, positionCollisionChecker=positionCollisionChecker)
+        super().__init__(environment, deltaConf, vehicleDynamics=vehicleDynamics, collChecker=collChecker)
         self.neighbourDist=neighbourDist
         self.costFunc = costFunction
         self.configNodeType = ConfigurationNode
@@ -31,12 +30,6 @@ class BidirectionalRRTStar(BidirectionalRRT):
     def expandGraph(self, graph):
         # Sample a random position
         randPos = self.env.getRandomPosition()
-        # Check that the position is not a collision
-        # This may need to change for more complex collisions than what is
-        # implemented
-        while self.collChecker.checkPointCollisions(randPos, self.env.obst) or \
-                self.collChecker.checkWallCollisions(randPos, self.env.walls):
-                    randPos = self.env.getRandomPosition()
 
         randOrient = self.dynamics.getRandomOrientation()
         randConf = np.array([*randPos, *randOrient])
@@ -50,13 +43,15 @@ class BidirectionalRRTStar(BidirectionalRRT):
         # Update if there is a cheaper neighbour
         lowCostNeighbour = graph.getLowestCostNeighbour(qNew.config, self.neighbourDist, qNear, cost, self.costFunc)
 
-        # Add the new node to the graph
-        graph.addNode(lowCostNeighbour, qNew, self.costFunc, connector)
+        # Check new connection for collisions
+        if not self.collChecker.checkCollisions(connector, self.env):
+            # Add the new node to the graph
+            graph.addNode(lowCostNeighbour, qNew, self.costFunc, connector)
 
-        # Rewire the tree based on the new node, if it is cheaper
-        neighbours = graph.getNeighbourhoodNodes(qNew.config, self.neighbourDist)
-        for neighbour in neighbours:
-            graph.rewireIfCheaper(qNew, neighbour, self.costFunc, self.dynamics, self.neighbourDist)
+            # Rewire the tree based on the new node, if it is cheaper
+            neighbours = graph.getNeighbourhoodNodes(qNew.config, self.neighbourDist)
+            for neighbour in neighbours:
+                graph.rewireIfCheaper(qNew, neighbour, self.costFunc, self.dynamics, self.neighbourDist)
 
 
     def findConnectionAndConnect(self, forwardGraph, backwardGraph):
