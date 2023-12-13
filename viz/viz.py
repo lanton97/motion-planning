@@ -33,15 +33,14 @@ class BaseContinuousRenderer:
     def draw_walls(self, walls):
         walls_tf = self._translate_lines(deepcopy(walls))
         for wall in walls_tf:
-            gfxdraw.line(self._surface, wall[0][0], wall[0][1], 
-                    wall[1][0], wall[1][1], BLACK)
+            gfxdraw.line(self._surface, int(wall.p1[0]), int(wall.p1[1]), int(wall.p2[0]), int(wall.p2[1]), BLACK)
 
     # Draw the start and end position, each a list of start and end points
     def draw_pois(self, start_pos, end_pos):
         start_pos_tf = self._translate_point(deepcopy(start_pos))
         end_pos_tf = self._translate_point(deepcopy(end_pos))
-        gfxdraw.filled_circle(self._surface, start_pos_tf[0], start_pos_tf[1], 5, YELLOW)
-        gfxdraw.filled_circle(self._surface, end_pos_tf[0], end_pos_tf[1], 5, GREEN)
+        gfxdraw.filled_circle(self._surface, int(start_pos_tf[0]), int(start_pos_tf[1]), 5, YELLOW)
+        gfxdraw.filled_circle(self._surface, int(end_pos_tf[0]), int(end_pos_tf[1]), 5, GREEN)
 
     # Draw nodes for the motion planning
     def draw_nodes(self, nodes):

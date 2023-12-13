@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<root>
+	<start_position pos="200 -200"/>
+	<goal_position pos="-200 200">-200 200</goal_position>
+	<walls>
+		<wall1 start="-250 170" end="-50 170"/>
+		<wall2 start="0 170" end="-250 170"/>
+		<wall3 start="-300 120" end="-100 120"/>
+		<wall4 start="-50 120" end="-300 120"/>
+		<wall5 start="-150 50" end="30 50"/>
+		<wall6 start="-100 50" end="200 50"/>
+		<wall7 start="-300 0" end="-200 0"/>
+		<wall8 start="-50 0" end="150 0"/>
+		<wall9 start="200 0" end="250 0"/>
+		<wall10 start="-300 80" end="-200 80"/>
+		<wall11 start="0 80" end="180 80"/>
+		<wall12 start="-200 150" end="200 150"/>
+		<wall13 start="0 180" end="300 180"/>
+		<wall14 start="250 -170" end="50 -170"/>
+		<wall15 start="0 -170" end="250 -170"/>
+		<wall16 start="300 -120" end="100 -120"/>
+		<wall17 start="50 -120" end="300 -120"/>
+		<wall18 start="150 -50" end="-30 -50"/>
+		<wall19 start="100 -50" end="-200 -50"/>
+		<wall20 start="300 0" end="200 0"/>
+		<wall21 start="50 0" end="-150 0"/>
+		<wall22 start="-200 0" end="-250 0"/>
+		<wall23 start="300 -80" end="200 -80"/>
+		<wall24 start="0 -80" end="-180 -80"/>
+		<wall25 start="200 -150" end="-200 -150"/>
+		<wall26 start="0 -180" end="-300 -180"/>
+	</walls>
+</root>

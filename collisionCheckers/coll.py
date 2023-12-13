@@ -30,10 +30,10 @@ class CollChecker():
     def checkWallCollisions(self, edge, walls):
         # Loop through the objects and their edges, then check if they intersect with any edges
         for wall in walls:
-            for connector in edge.connectors:
-                if type(connector) is arcSeg and checkArcLineIntersection(connector, wall):
+            for connector in edge:
+                if type(connector) is arcSeg and self.checkArcLineIntersection(connector, wall):
                     return True
-                elif type(connector) is straightLine and checkLineLineIntersection(connector, wall):
+                elif type(connector) is straightLine and self.checkLineLineIntersection(connector, wall):
                     return True
         return False
 
