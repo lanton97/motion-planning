@@ -1,5 +1,5 @@
 # motion-planning
-##Overview
+## Overview
 This is a collection of algorithms and other infrastructure I have developed to learn about motion planning in robotics. The code base is primarily Python. I have developed made the motion planners and compnents modular, in order to make the code extensible to arbitrary robot kinematics and environment dimensionality, although at the moment only 2D environments are implemented.
 
 A sample of the RRT\* algorithm planning on an empty environment can be seen below.
