@@ -71,7 +71,6 @@ class BaseContinuousRenderer:
         surf = pygame.transform.flip(self._surface, True, False)
         self._display.blit(surf, (0, 0))
         pygame.event.pump()
-        self._clock.tick(1)
         pygame.display.flip()
 
     def clear(self):
