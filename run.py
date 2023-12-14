@@ -14,6 +14,9 @@ parser.add_argument('--vehicle', dest='veh', metavar='veh_name', default='partic
 parser.add_argument('--map', dest='map', metavar='map_name', default='empty-2D',
         help='Name of the map we want to evaluate on. Valid maps: ' + str(maps.keys()))
 
+parser.add_argument('--map-file', dest='map_file', metavar='map_file', default='test_maze2.xml',
+        help='File name for loading the configuration. The file should reside in env/map_data/ .')
+
 parser.add_argument('--render', dest='rend', metavar='rend', default='',
         help='Whether to render the environment or not. Leave empty for no, insert anything for yes.')
 
@@ -37,7 +40,9 @@ if args.veh not in vehicles.keys():
     print(str(args.alg) + " is not a valid vehicle. Please choose from the list: " + str(vehicles.keys()))
     exit(-1)
 
-env = maps[args.map]()
+fileName = "env/map_data/" + args.map_file
+
+env = maps[args.map](init_path=fileName)
 vehicle = vehicles[args.veh]
 planner = algorithms[args.alg](env, 10.0, vehicleDynamics=vehicle)
 render = False
