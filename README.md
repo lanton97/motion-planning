@@ -4,7 +4,7 @@ This is a collection of algorithms and other infrastructure I have developed to 
 
 A sample of the RRT\* algorithm planning on an empty environment can be seen below.
 
-![alt text](https://github.com/lanton97/motion-planning/blob/main/assets/rrt*-run.gif)
+![alt text](https://github.com/lanton97/motion-planning/blob/main/assets/rrt\*_run.gif)
 
 ## Installing dependencies
 
