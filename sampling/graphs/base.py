@@ -2,10 +2,12 @@ import numpy as np
 from copy import deepcopy
 from common.geom import *
 
+# A class for a node in the graph
 class ConfigurationNode():
     def __init__(self, configuration):
         self.config = configuration
 
+# This edge class holds the parent node and the connections
 class Edge():
     def __init__(self, parentNode, connectors):
         self.connectors = connectors
@@ -43,6 +45,7 @@ class ConfigurationGraph():
                 nearestNode = node
         return nearestNode
 
+    # Retreive the nodes and edges for rendering
     def getNodeAndEdgeList(self):
         nodeList = []
         for node in self.nodes:
@@ -55,6 +58,7 @@ class ConfigurationGraph():
 
         return nodeList, edgeList
 
+    # Get a path from the leaf node at the end to the root node
     def getPath(self):
         nodeList = []
         edgeList = []

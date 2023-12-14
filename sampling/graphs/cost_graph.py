@@ -1,5 +1,6 @@
 from sampling.graphs.base import *
 
+# This class also stores the cumulative cost of each node`
 class CostConfigurationGraph(ConfigurationGraph):
 
     def __init__(self, configDimensionality, positionDimensionality, initNode):
@@ -35,6 +36,7 @@ class CostConfigurationGraph(ConfigurationGraph):
                 nearestNode = node
         return nearestNode
 
+    # Get all nodes in a neighbourhood
     def getNeighbourhoodNodes(self, position, delta):
         nodeList= []
         for node in self.nodes:
@@ -44,6 +46,7 @@ class CostConfigurationGraph(ConfigurationGraph):
                 nodeList.append(node)
         return nodeList
 
+    # Get the lowest cost neighbour in a given neighbourhood
     def getLowestCostNeighbour(self, position, delta, initCandidate, initCost, costFunc):
         minCost = initCost
         lowestCostNode = initCandidate
@@ -58,7 +61,7 @@ class CostConfigurationGraph(ConfigurationGraph):
 
         return lowestCostNode
 
-
+    # Rewire neighbour nodes if it would lower their cost
     def rewireIfCheaper(self, node, potentialChild, costFunc, dynamics, rewireDist):
         if costFunc(node.config, potentialChild.config) + self.costs[node] < self.costs[potentialChild]:
             _, cost, connector = dynamics.sampleWCost(node, potentialChild.config, rewireDist, costFunc)

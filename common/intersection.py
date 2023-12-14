@@ -5,7 +5,6 @@ from common.util import *
 # and https://www.mathworks.com/matlabcentral/answers/401724-how-to-check-if-a-line-segment-intersects-a-circle
 # Given three collinear points p, q, r, the function checks if 
 # point q lies on line segment 'pr' 
-
 def onSegment(p, q, r): 
 	if ( (q[0] <= max(p[0], r[0])) and (q[0] >= min(p[0], r[0])) and
 		(q[1] <= max(p[1], r[1])) and (q[1] >= min(p[1], r[1]))): 
@@ -70,6 +69,7 @@ def doLinesIntersect(p1,q1,p2,q2):
     # If none of the cases 
     return False
 
+# Check if a given arc and line intersect
 def doArcLineIntersect(arc, line):
     dx = line.p2[0] - line.p1[0]
     dy = line.p2[1] - line.p1[1]
@@ -103,6 +103,7 @@ def doArcLineIntersect(arc, line):
 
     return intersect 
 
+# Check if a point is on both the line and arc to see if the two intersect
 def isOnLineAndArc(point, line, arc):
     isOnLine = (line.p1[0] <= point[0] <= line.p2[0] and line.p1[1] <= point[1] <= line.p2[1] ) 
     isOnLine = isOnLine or  (line.p1[0] >= point[0] >= line.p2[0] and line.p1[1] >= point[1] >= line.p2[1] )

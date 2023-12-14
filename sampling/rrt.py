@@ -23,16 +23,21 @@ class RRT(BaseSamplingPlanner):
         self.configNodeType = ConfigurationNode
         self.configGraphType = ConfigurationGraph
 
+    # This function runs the loop for sampling and expanding the tree until a path is found
     def plan(self, numSamples, render=True):
+        # Initialize the grapgs
         initNode = self.configNodeType(self.initConfig)
         graph = self.configGraphType(len(self.initConfig), self.env.dim, initNode)
         image_data = []
 
+        # Sample up to N times
         for i in range(numSamples):
-            # Sample a random position
+            # expand the graph once
             self.expandGraph(graph)
 
+            # Check if the graph has a connection to the end
             if self.findConnectionAndConnect(graph):
+                # If so, exit
                 print("Path Found")
                 break
 
@@ -45,8 +50,9 @@ class RRT(BaseSamplingPlanner):
 
         return graph, image_data
 
+    # Add a new node to the graph in-place
     def expandGraph(self, graph):
-        # TODO: Fix sampling from free space in environment
+        # Sample a random configuration
         randPos = self.env.getRandomPosition()
         randOrient = self.dynamics.getRandomOrientation()
         randConf = np.array([*randPos, *randOrient])
@@ -54,7 +60,6 @@ class RRT(BaseSamplingPlanner):
         qNear = graph.getNearestNode(randPos)
         # Create a new configuration node closer to the random one by sampling
         # the vehicle dynamics
-        # TODO: Add collision checking for new node
         qNew, connector = self.dynamics.sample(qNear, randConf, self.delConf)
 
         # Check new connection for collisions
@@ -62,14 +67,20 @@ class RRT(BaseSamplingPlanner):
             # Add the new node to the graph
             graph.addNode(qNear, qNew, connector)
 
+    # Check if we can connect the graph to the final position, and do so
+    # Return true if a connection has been made, false otherwise
     def findConnectionAndConnect(self, graph):
+        # Get the most recent node, as this is the only one we haven't checkd yet
         mostRecentNode = graph.nodes[-1]
         connectionFound = False
+        # Check if we are close enough to connect to the final node
         if np.linalg.norm(mostRecentNode.config[:self.env.dim] - self.env.endPos) < self.delConf:
+            # Get a random orientation for the final node
             randOrient = self.dynamics.getRandomOrientation()
             endConf = np.array([*self.env.endPos, *randOrient])
+            # Create a new connection and node using the vehicle dynamics
             qNew, connector = self.dynamics.sample(mostRecentNode, endConf, self.delConf)
-
+            # Check for collisions before connecting
             if not self.collChecker.checkCollisions(connector, self.env):
                 connectionFound = True
                 graph.addNode(mostRecentNode, qNew, connector)

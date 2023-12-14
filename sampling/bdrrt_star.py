@@ -3,13 +3,8 @@ from sampling.graphs.base import *
 from sampling.graphs.cost_graph import *
 from sampling.bdrrt import *
 from sampling.costs.dist import distanceCost
-# Base RRT planner developed from the description in
-# http://lavalle.pl/rrt/about.html
-# Should work in a variety of environments, as it is
-# agnostic to vehicle dynamics, configuration space
-# dimensionality, and collision checking
-# Does assume only two types of obstacles: points
-# and walls
+
+# A class for the bidirectional RRT* algorithms
 class BidirectionalRRTStar(BidirectionalRRT):
     def __init__(self,
             environment,
@@ -38,7 +33,6 @@ class BidirectionalRRTStar(BidirectionalRRT):
 
         # Create a new configuration node closer to the random one by sampling
         # the vehicle dynamics
-        # TODO: Add collision checking for new node
         qNew, cost, connector = self.dynamics.sampleWCost(qNear, randConf, self.delConf, self.costFunc)
         # Update if there is a cheaper neighbour
         lowCostNeighbour = graph.getLowestCostNeighbour(qNew.config, self.neighbourDist, qNear, cost, self.costFunc)
