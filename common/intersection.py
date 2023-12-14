@@ -106,7 +106,8 @@ def doArcLineIntersect(arc, line):
 def isOnLineAndArc(point, line, arc):
     isOnLine = (line.p1[0] <= point[0] <= line.p2[0] and line.p1[1] <= point[1] <= line.p2[1] ) 
     isOnLine = isOnLine or  (line.p1[0] >= point[0] >= line.p2[0] and line.p1[1] >= point[1] >= line.p2[1] )
-    pointAngle = np.arctan2(point[1] - arc.centre[1], point[0] - arc.centre[0])
-    isOnArc = deg2Rad(arc.th1) < pointAngle < deg2Rad(arc.th2)
-    return isOnLine and isOnArc
+    pointAngle = np.arctan2(point[1] - arc.centre[1], point[0] - arc.centre[0]) 
+    isOnArc = arc.th1 > pointAngle > arc.th2
+    #TODO: Fix the arc thecking
+    return isOnLine# and isOnArc
 
