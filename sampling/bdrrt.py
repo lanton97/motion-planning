@@ -90,7 +90,7 @@ class BidirectionalRRT(BaseSamplingPlanner):
                 newNode = backwardGraph.edges[nearestNode].parentNode
                 connector = backwardGraph.edges[nearestNode].connectors
             # Update once more to add the last root node
-            forwardGraph.addNode(nearestNode, newNode, connectors)
+            forwardGraph.addNode(nearestNode, newNode, connector)
 
 
         if bwToFWDist < self.delConf:
