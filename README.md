@@ -4,26 +4,26 @@ This is a collection of algorithms and other infrastructure I have developed to 
 
 A sample of the RRT\* algorithm planning on an empty environment can be seen below.
 
-![alt text](assets/rrt*.gif "rrt*")
+![alt text](https://github.com/lanton97/motion-planning/blob/main/assets/rrt*-run.gif)
 
 ## Installing dependencies
 
 To install the correct environment using anaconda, run 
-'''req
+```req
 conda env create -f environment.yml
-'''
+```
 
 ## Run a Planner
 
 We use a single script with various options to run a planner in the defined environments and with the given vehicle dynamics. To run the script with the default arguments, run
 
-'''sample
+```sample
 run.py
-'''
+```
 
 This runs the RRT algorithm with the particle dynamics and an empty planning environment. Further options for the script are detailed below.
 
-'''run
+```run
 usage: run.py [-h] [--alg alg_name] [--vehicle veh_name] [--map map_name] [--map-file map_file] [--render rend] [--break-on-path break] [--save-run save]
 
 This script handles running motion planning algorithms
@@ -38,12 +38,12 @@ optional arguments:
   --break-on-path break
                         Whether to finish planning if a path is founc. Leave empty for no, insert anything for yes.
   --save-run save       Whether to save the run as an animation. Any string is considered as true.
-'''
+```
 
 ## Maze Environment
 We define a basic maze environment that utilizes user defined walls and starting/ending positions. We can alter the setup by editing an XML file. The file should be included in the "env/map_data/" directory, and can be specified using the run.py script. A sample file is provided, and can be seen below.
  
-'''maze
+```maze
 <?xml version="1.0" ?>
 <root>
 	<start_position pos="200 -200"/>
@@ -77,7 +77,7 @@ We define a basic maze environment that utilizes user defined walls and starting
 		<wall26 start="0 -180" end="-300 -180"/>
 	</walls>
 </root>
-'''
+```
 As we can see, the various positions of the walls are simple to edit. An example of the Bidirectional RRT algorithm running on this maze can be seen below.
 
-![alt text](assets/bd-rrt.gif "bd-rrt")
+![alt text](https://github.com/lanton97/motion-planning/blob/main/assets/bd-run.gif)
