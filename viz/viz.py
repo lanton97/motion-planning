@@ -48,15 +48,15 @@ class BaseContinuousRenderer:
         for node in nodes_tf:
             gfxdraw.filled_circle(self._surface, int(node[0]), int(node[1]), 1, GREY)
 
-    def draw_lines_and_curves(self, connectors):
+    def draw_lines_and_curves(self, connectors, colour=GREY):
         connectors_tf = deepcopy(connectors)
         for connector in connectors:
             if type(connector) is arcSeg:
                 connector = self._translate_arc_seg(connector)
-                gfxdraw.arc(self._surface, int(connector.centre[0]), int(connector.centre[1]), int(connector.rad), int(rad2Deg(connector.th1)), int(rad2Deg(connector.th2)), GREY)
+                gfxdraw.arc(self._surface, int(connector.centre[0]), int(connector.centre[1]), int(connector.rad), int(rad2Deg(connector.th1)), int(rad2Deg(connector.th2)), colour)
             else:
                 connector = self._translate_line(connector)
-                gfxdraw.line(self._surface, int(connector.p1[0]), int(connector.p1[1]), int(connector.p2[0]), int(connector.p2[1]), GREY)
+                gfxdraw.line(self._surface, int(connector.p1[0]), int(connector.p1[1]), int(connector.p2[0]), int(connector.p2[1]), colour)
 
 
     # Draw straight edge connections between nodes

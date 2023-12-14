@@ -2,6 +2,7 @@ import numpy as np
 from sampling.graphs.base import *
 from collisionCheckers.coll import CollChecker
 from sampling.base import *
+from viz.viz import *
 # Base RRT planner developed from the description in
 # http://lavalle.pl/rrt/about.html
 # Should work in a variety of environments, as it is
@@ -44,6 +45,7 @@ class BidirectionalRRT(BaseSamplingPlanner):
 
         if render:
             image_data.append(self.render(forwardGraph, backwardGraph))
+            image_data.append(self.highlightFinalPath(forwardGraph, backwardGraph))
 
         return forwardGraph, image_data
 
@@ -83,14 +85,15 @@ class BidirectionalRRT(BaseSamplingPlanner):
             newNode = nearestBWNodeToFW
             nearestNode = newestForwardNode
             _, connector = self.dynamics.sample(nearestNode, newNode.config, self.delConf)
+            if not self.collChecker.checkCollisions(connector, self.env):
 
-            while backwardGraph.nodes.index(newNode) != 0:
+                while backwardGraph.nodes.index(newNode) != 0:
+                    forwardGraph.addNode(nearestNode, newNode, connector)
+                    nearestNode = newNode
+                    newNode = backwardGraph.edges[nearestNode].parentNode
+                    connector = backwardGraph.edges[nearestNode].connectors
+                # Update once more to add the last root node
                 forwardGraph.addNode(nearestNode, newNode, connector)
-                nearestNode = newNode
-                newNode = backwardGraph.edges[nearestNode].parentNode
-                connector = backwardGraph.edges[nearestNode].connectors
-            # Update once more to add the last root node
-            forwardGraph.addNode(nearestNode, newNode, connector)
 
 
         if bwToFWDist < self.delConf:
@@ -98,13 +101,15 @@ class BidirectionalRRT(BaseSamplingPlanner):
             newNode = newestBackwardNode
             nearestNode = nearestFWNodeToBW
             _, connector = self.dynamics.sample(nearestNode, newNode.config, self.delConf)
-            while backwardGraph.nodes.index(newNode) != 0:
+            if not self.collChecker.checkCollisions(connector, self.env):
+
+                while backwardGraph.nodes.index(newNode) != 0:
+                    forwardGraph.addNode(nearestNode, newNode, connector)
+                    nearestNode = newNode
+                    newNode = backwardGraph.edges[nearestNode].parentNode
+                    connector = backwardGraph.edges[nearestNode].connectors
+                # Update once more to add the last root node
                 forwardGraph.addNode(nearestNode, newNode, connector)
-                nearestNode = newNode
-                newNode = backwardGraph.edges[nearestNode].parentNode
-                connector = backwardGraph.edges[nearestNode].connectors
-            # Update once more to add the last root node
-            forwardGraph.addNode(nearestNode, newNode, connector)
 
         return connectionFound
 
@@ -124,4 +129,19 @@ class BidirectionalRRT(BaseSamplingPlanner):
         img_data = self.renderer.pull_array()
         return img_data
 
+    def highlightFinalPath(self, forwardGraph, backwardGraph):
+        self.renderer.clear()
+        self.renderer.draw_walls(self.env.walls)
+        self.renderer.draw_pois(self.env.startPos, self.env.endPos)
+        nodeList, edgeList = forwardGraph.getNodeAndEdgeList()
+        self.renderer.draw_nodes(nodeList)
+        self.renderer.draw_lines_and_curves(edgeList)
+        nodeList, edgeList = backwardGraph.getNodeAndEdgeList()
+        self.renderer.draw_nodes(nodeList)
+        self.renderer.draw_lines_and_curves(edgeList)
+        _, finalEdges = forwardGraph.getPath()
+        self.renderer.draw_lines_and_curves(finalEdges, colour=RED)
+        self.renderer.update()
+        img_data = self.renderer.pull_array()
+        return img_data
 

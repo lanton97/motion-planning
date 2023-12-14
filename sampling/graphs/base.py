@@ -55,3 +55,17 @@ class ConfigurationGraph():
 
         return nodeList, edgeList
 
+    def getPath(self):
+        nodeList = []
+        edgeList = []
+        node = self.nodes[-1]
+        nodeList.append(deepcopy(node))
+        while self.nodes.index(node) != 0:
+            edge = self.edges[node]
+            node = edge.parentNode
+            edgeList.extend(deepcopy(edge.connectors))
+            nodeList.append(deepcopy(node))
+
+        return nodeList, edgeList
+
+
