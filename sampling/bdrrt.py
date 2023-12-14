@@ -81,11 +81,12 @@ class BidirectionalRRT(BaseSamplingPlanner):
         connectionFound = False
         # TODO: Refactor the next part to reuse code
         if fwToBWDist < self.delConf:
-            connectionFound = True
+
             newNode = nearestBWNodeToFW
             nearestNode = newestForwardNode
             _, connector = self.dynamics.sample(nearestNode, newNode.config, self.delConf)
             if not self.collChecker.checkCollisions(connector, self.env):
+                connectionFound = True
 
                 while backwardGraph.nodes.index(newNode) != 0:
                     forwardGraph.addNode(nearestNode, newNode, connector)
@@ -97,11 +98,12 @@ class BidirectionalRRT(BaseSamplingPlanner):
 
 
         if bwToFWDist < self.delConf:
-            connectionFound = True
+
             newNode = newestBackwardNode
             nearestNode = nearestFWNodeToBW
             _, connector = self.dynamics.sample(nearestNode, newNode.config, self.delConf)
             if not self.collChecker.checkCollisions(connector, self.env):
+                connectionFound = True
 
                 while backwardGraph.nodes.index(newNode) != 0:
                     forwardGraph.addNode(nearestNode, newNode, connector)

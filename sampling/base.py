@@ -2,6 +2,7 @@ import numpy as np
 from viz.viz import BaseContinuousRenderer
 import time
 from copy import deepcopy
+from viz.viz import *
 
 # A simple base planner acting as a virtual class
 class BaseSamplingPlanner():
@@ -30,7 +31,7 @@ class BaseSamplingPlanner():
         img_data = self.renderer.pull_array()
         return img_data
             
-    def highlightFinalPath(self, forwardGraph, backwardGraph):
+    def highlightFinalPath(self, forwardGraph):
         self.renderer.clear()
         self.renderer.draw_walls(self.env.walls)
         self.renderer.draw_pois(self.env.startPos, self.env.endPos)

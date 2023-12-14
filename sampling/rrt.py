@@ -2,6 +2,7 @@ import numpy as np
 from sampling.graphs.base import *
 from collisionCheckers.coll import CollChecker
 from sampling.base import *
+
 # Base RRT planner developed from the description in
 # http://lavalle.pl/rrt/about.html
 # Should work in a variety of environments, as it is
@@ -40,6 +41,7 @@ class RRT(BaseSamplingPlanner):
 
         if render:
             image_data.append(self.render(graph))
+            image_data.append(self.highlightFinalPath(graph))
 
         return graph, image_data
 
@@ -64,11 +66,13 @@ class RRT(BaseSamplingPlanner):
         mostRecentNode = graph.nodes[-1]
         connectionFound = False
         if np.linalg.norm(mostRecentNode.config[:self.env.dim] - self.env.endPos) < self.delConf:
-            connectionFound = True
             randOrient = self.dynamics.getRandomOrientation()
             endConf = np.array([*self.env.endPos, *randOrient])
             qNew, connector = self.dynamics.sample(mostRecentNode, endConf, self.delConf)
-            graph.addNode(mostRecentNode, qNew, connector)
+
+            if not self.collChecker.checkCollisions(connector, self.env):
+                connectionFound = True
+                graph.addNode(mostRecentNode, qNew, connector)
 
         return connectionFound
 

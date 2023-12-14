@@ -54,10 +54,11 @@ class RRTStar(RRT):
         mostRecentNode = graph.nodes[-1]
         connectionFound = False
         if np.linalg.norm(mostRecentNode.config[:self.env.dim] - self.env.endPos) < self.delConf:
-            connectionFound = True
             randOrient = self.dynamics.getRandomOrientation()
             endConf = np.array([*self.env.endPos, *randOrient])
             qNew, cost, connector = self.dynamics.sampleWCost(mostRecentNode, endConf, self.delConf, self.costFunc)
-            graph.addNode(mostRecentNode, qNew, self.costFunc, connector)
+            if not self.collChecker.checkCollisions(connector, self.env):
+                connectionFound = True
+                graph.addNode(mostRecentNode, qNew, self.costFunc, connector)
 
         return connectionFound
