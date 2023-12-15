@@ -81,3 +81,9 @@ We define a basic maze environment that utilizes user defined walls and starting
 As we can see, the various positions of the walls are simple to edit. An example of the Bidirectional RRT algorithm running on this maze can be seen below.
 
 ![alt text](https://github.com/lanton97/motion-planning/blob/main/assets/bd-run.gif)
+
+## References
+RRT - https://msl.cs.illinois.edu/~lavalle/papers/Lav98c.pdf
+RRT\* - https://arxiv.org/abs/1105.1186
+Bidirectional RRT\* - https://dspace.mit.edu/handle/1721.1/79884
+FMT - https://stanfordasl.github.io/wp-content/papercite-data/pdf/Janson.Pavone.ISRR13.pdf
