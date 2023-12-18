@@ -27,10 +27,8 @@ class BasicMazeEnv(BaseEnv):
     def getPositionData(self):
         return self.start_pos, self.goal_pos, self.walls, self.obst
 
-    # Sample a random position within the map area
-    def getRandomPosition(self):
-        randX = np.random.uniform(low=-self.xMax, high=self.xMax)
-        randY = np.random.uniform(low=-self.yMax, high=self.yMax)
-        return [randX, randY]
-
+    # Sample a random position within the bound of the map
+    def getRandomPosition(self, size=1):
+        rand = np.squeeze(np.random.uniform(low=[-self.xMax, -self.yMax], high=[self.xMax, self.yMax], size=size*2))
+        return rand
 

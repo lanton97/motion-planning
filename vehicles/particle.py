@@ -35,7 +35,7 @@ class particleDynamics2D():
 
         return newConfig, cost, [connector]
 
-    def getRandomOrientation(self):
+    def getRandomOrientation(self, size=1):
         return []
 
 

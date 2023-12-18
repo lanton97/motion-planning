@@ -28,10 +28,10 @@ class Empty2DEnv(BaseEnv):
         return self.startPos, self.endPos, self.walls, self.obst
 
     # Sample a random position within the bound of the map
-    def getRandomPosition(self):
-        randX = np.random.uniform(low=-self.xMax, high=self.xMax)
-        randY = np.random.uniform(low=-self.yMax, high=self.yMax)
-        return [randX, randY]
+    def getRandomPosition(self, size=1):
+        rand = np.squeeze(np.random.uniform(low=[-self.xMax, -self.yMax], high=[self.xMax, self.yMax], size=size*2))
+        return rand
+
 
 
 
