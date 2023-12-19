@@ -51,11 +51,11 @@ class FMT(RRT):
         image_data = []
         while z is not endNode and len(VOpen) != 0:
             openNewV = set()
-            Nz = set(graph.getNeighbourhoodNodes(z.config, self.delConf)).intersection(unvisited)
+            Nz = self.near(z, graph).intersection(unvisited)
             self.save(Nz, z)
             Xnear = Nz.intersection(unvisited)
             for x in Xnear:
-                Nx = set(graph.getNeighbourhoodNodes(x.config, self.delConf))
+                Nx = self.near(x, graph)
                 Nx.discard(x)
                 self.save(Nx, x)
                 Ynear = list(Nx.intersection(VOpen))
@@ -90,6 +90,11 @@ class FMT(RRT):
     def isConnected(self, z):
         return np.linalg.norm(z.config[:self.env.dim] - self.env.endPos) < self.finishDist
 
+    def near(self, z, graph):
+        if z in self.nearMemory.keys():
+            return self.nearMemory[z]
+        return set(graph.getNeighbourhoodNodes(z.config, self.delConf))
+        
     def save(self, Nz, z):
         self.nearMemory[z] = Nz
 
