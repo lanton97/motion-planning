@@ -24,20 +24,24 @@ run.py
 This runs the RRT algorithm with the particle dynamics and an empty planning environment. Further options for the script are detailed below.
 
 ```run
-usage: run.py [-h] [--alg alg_name] [--vehicle veh_name] [--map map_name] [--map-file map_file] [--render rend] [--break-on-path break] [--save-run save]
+usage: run.py [-h] [--alg alg_name] [--vehicle veh_name] [--map map_name] [--iters iters] [--delta delta] [--map-file map_file] [--render rend] [--break-on-path break] [--save-run save]
 
 This script handles running motion planning algorithms
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  --alg alg_name        Name of the algorithm we want to try. Valid algorithms: dict_keys(['rrt', 'rrt*', 'bd-rrt', 'bd-rrt*'])
+  --alg alg_name        Name of the algorithm we want to try. Valid algorithms: dict_keys(['rrt', 'rrt*', 'bd-rrt', 'bd-rrt*', 'fmt'])
   --vehicle veh_name    Name of the vehicle dynamics we want. Valid vehicle dynamics: dict_keys(['particle-2d', 'dubins'])
   --map map_name        Name of the map we want to evaluate on. Valid maps: dict_keys(['empty-2D', 'maze-2D'])
+  --iters iters         Maximum number of samples
+  --delta delta         Maximum change in position per tree expansion.
   --map-file map_file   File name for loading the configuration. The file should reside in env/map_data/ .
   --render rend         Whether to render the environment or not. Leave empty for no, insert anything for yes.
   --break-on-path break
                         Whether to finish planning if a path is founc. Leave empty for no, insert anything for yes.
   --save-run save       Whether to save the run as an animation. Any string is considered as true.
+
+usage: run.py [-h] [--alg alg_name] [--vehicle veh_name] [--map map_name] [--map-file map_file] [--render rend] [--break-on-path break] [--save-run save]
 ```
 
 ## Maze Environment
