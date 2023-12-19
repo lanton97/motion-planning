@@ -47,6 +47,7 @@ class FMT(RRT):
         VClosed = set()
 
         z = initNode
+        pathFlag = True
 
         image_data = []
         while z is not endNode and len(VOpen) != 0:
@@ -75,6 +76,7 @@ class FMT(RRT):
             VOpen.update(openNewV)
             if len(VOpen) == 0:
                 print("Search failed")
+                pathFlag = False
                 break
             VClosed.add(z)
             tmpVOpen = list(VOpen)
@@ -83,7 +85,8 @@ class FMT(RRT):
 
         if render:
             image_data.append(self.render(graph))
-            #image_data.append(self.highlightFinalPath(graph))
+            if pathFlag:
+                image_data.append(self.highlightFinalPath(graph, z))
 
         return graph, image_data
 
@@ -97,8 +100,5 @@ class FMT(RRT):
         
     def save(self, Nz, z):
         self.nearMemory[z] = Nz
-
-
-
 
 

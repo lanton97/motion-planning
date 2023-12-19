@@ -41,7 +41,7 @@ class BaseSamplingPlanner():
             
     # same as above, but we also render the path from the final leaf node to
     # the root in red
-    def highlightFinalPath(self, forwardGraph):
+    def highlightFinalPath(self, forwardGraph, node=None):
         self.renderer.clear()
         self.renderer.draw_walls(self.env.walls)
         self.renderer.draw_pois(self.env.startPos, self.env.endPos)
@@ -49,7 +49,7 @@ class BaseSamplingPlanner():
         self.renderer.draw_nodes(nodeList)
         self.renderer.draw_lines_and_curves(edgeList)
         # We also get the edges corresponding with the final path
-        _, finalEdges = forwardGraph.getPath()
+        _, finalEdges = forwardGraph.getPath(node)
         # And highlight them in red
         self.renderer.draw_lines_and_curves(finalEdges, colour=RED)
         self.renderer.update()

@@ -59,10 +59,11 @@ class ConfigurationGraph():
         return nodeList, edgeList
 
     # Get a path from the leaf node at the end to the root node
-    def getPath(self):
+    def getPath(self, node=None):
         nodeList = []
         edgeList = []
-        node = self.nodes[-1]
+        if node is None:
+            node = self.nodes[-1]
         nodeList.append(deepcopy(node))
         while self.nodes.index(node) != 0:
             edge = self.edges[node]
