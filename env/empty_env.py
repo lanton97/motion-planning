@@ -29,7 +29,7 @@ class Empty2DEnv(BaseEnv):
 
     # Sample a random position within the bound of the map
     def getRandomPosition(self, size=1):
-        rand = np.squeeze(np.random.uniform(low=[-self.xMax, -self.yMax], high=[self.xMax, self.yMax], size=size*2))
+        rand = np.squeeze(np.random.uniform(low=[-self.xMax, -self.yMax]*size, high=[self.xMax, self.yMax]*size, size=size*2).reshape(-1, 2))
         return rand
 
 

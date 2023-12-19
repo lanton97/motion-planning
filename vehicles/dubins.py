@@ -47,4 +47,6 @@ class dubinsCar():
         return newConfig, cost, connector
 
     def getRandomOrientation(self, size=1):
-        return [np.squeeze(np.random.uniform(0,2*np.pi, size=size))]
+        if size == 1:
+            return [np.random.uniform(0,2*np.pi)]
+        return np.random.uniform([0]*size,[2*np.pi]*size, size=size).reshape(-1,1)

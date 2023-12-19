@@ -14,6 +14,12 @@ parser.add_argument('--vehicle', dest='veh', metavar='veh_name', default='partic
 parser.add_argument('--map', dest='map', metavar='map_name', default='empty-2D',
         help='Name of the map we want to evaluate on. Valid maps: ' + str(maps.keys()))
 
+parser.add_argument('--iters', dest='iter', metavar='iters', default='5000',
+        help='Maximum number of samples')
+
+parser.add_argument('--delta', dest='delta', metavar='delta', default='20',
+        help='Maximum change in position per tree expansion.')
+
 parser.add_argument('--map-file', dest='map_file', metavar='map_file', default='test_maze2.xml',
         help='File name for loading the configuration. The file should reside in env/map_data/ .')
 
@@ -44,12 +50,12 @@ fileName = "env/map_data/" + args.map_file
 
 env = maps[args.map](init_path=fileName)
 vehicle = vehicles[args.veh]
-planner = algorithms[args.alg](env, 10.0, vehicleDynamics=vehicle)
+planner = algorithms[args.alg](env, float(args.delta), vehicleDynamics=vehicle)
 render = False
 if args.rend:
     render = True
 
-graph, img_data = planner.plan(10000, True)
+graph, img_data = planner.plan(int(args.iter), True)
 
 if args.save:
     dir = generate_results_dir(args.map, args.alg)

@@ -69,8 +69,15 @@ class CostConfigurationGraph(ConfigurationGraph):
             self.edges[potentialChild] = edge
             self.costs[potentialChild] = costFunc(node.config, potentialChild.config) + self.costs[node]
 
-    def addEdge(self, parentNode, node, connector, cost):
+    def addEdge(self, parentNode, node, connector, costFunc):
         edge = Edge(parentNode, connector)
         self.edges[node] = edge
         self.costs[node] = costFunc(node.config, parentNode.config) + self.costs[parentNode]
 
+
+    def addNodesNoEdge(self,
+            nodes,
+            ):
+        for node in nodes:
+            self.nodes.append(node)
+            self.costs[node] = 0 

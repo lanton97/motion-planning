@@ -7,6 +7,7 @@ algorithms = {
         'rrt*': RRTStar,
         'bd-rrt': BidirectionalRRT,
         'bd-rrt*': BidirectionalRRTStar,
+        'fmt': FMT,
         }
 
 vehicles = {
