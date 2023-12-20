@@ -112,3 +112,11 @@ def isOnLineAndArc(point, line, arc):
     #TODO: Fix the arc thecking
     return isOnLine# and isOnArc
 
+def checkCircleInBound(seg, xMax, yMax):
+    isInX = (-xMax + seg.rad < seg.centre[0] < xMax - seg.rad)
+    isInX = (-yMax + seg.rad < seg.centre[1] < yMax - seg.rad)
+
+def checkLineInBound(seg, xMax, yMax):
+    isInX = (xMax > seg.p1[0] > -xMax) and (xMax > seg.p2[0] > -xMax)
+    isInY = (yMax > seg.p1[1] > -yMax) and (yMax > seg.p2[1] > -yMax)
+    return isInX and isInY

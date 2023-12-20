@@ -15,7 +15,11 @@ class CollChecker():
     def checkCollisions(self, edge, env):
         walls = env.walls
         objects = env.obst
-        collide = self.checkObjectCollisions(edge, objects) or self.checkWallCollisions(edge, walls)
+        xMax = env.xMax
+        yMax = env.yMax
+        collide = self.checkObjectCollisions(edge, objects) or self.checkWallCollisions(edge, walls) or \
+                  self.checkInBounds(edge, xMax, yMax)
+
 
         return collide
 
@@ -52,6 +56,14 @@ class CollChecker():
     # Helper function to find the line-arc intersection
     def checkArcLineIntersection(self, arc, line):
         return doArcLineIntersect(arc, line) 
+
+    def checkInBounds(self, edge, xMax, yMax):
+        for connector in edge:
+            if type(connector) is arcSeg and checkCircleInBound(connector, xMax, yMax):
+                return False
+            elif type(connector) is straightLine and checkLineInBound(connector, xMax, yMax):
+                return False
+        return True
 
 
 
